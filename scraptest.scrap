@@ -1,27 +1,29 @@
 # This is the header of a scrapfile
 name="scraptest"
 desc="test package"
-info="https://github.com/apiwo/scraptest"
+info="https://github.com/apiwo/scrap-test-package"
 version="1.0.0"
 license="None"
 maintainer="apiwo"
 
-# Two extra properties for your system
+# Extra properties for the scrap manager
 arch="x86_64"
-category="utils"
+priority="optional"
 
 depends="gcc, make, libc-dev"
-build-type="make"
+build-type="git"
 
-# Build and Install logic
-download="https://github.com/apiwo/scraptest/archive/refs/tags/v1.0.0.tar.gz"
+# Remote source location
+download="https://github.com/apiwo/scrap-test-package.git"
 
 build() {
-    # Compiles the 5 .c files into the scraptest binary
+    # The manager should cd into the cloned directory automatically
+    # Compiles the 5 .c files using the local Makefile
     make
 }
 
 instructions() {
-    # Uses the Makefile to install into the package destination
+    # Standard installation logic
+    # $SCRAP_PKG_DEST is the fakeroot for your package manager
     make DESTDIR="$SCRAP_PKG_DEST" install
 }
