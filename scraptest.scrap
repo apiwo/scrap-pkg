@@ -1,0 +1,27 @@
+# This is the header of a scrapfile
+name="scraptest"
+desc="test package"
+info="https://github.com/apiwo/scraptest"
+version="1.0.0"
+license="None"
+maintainer="apiwo"
+
+# Two extra properties for your system
+arch="x86_64"
+category="utils"
+
+depends="gcc, make, libc-dev"
+build-type="make"
+
+# Build and Install logic
+download="https://github.com/apiwo/scraptest/archive/refs/tags/v1.0.0.tar.gz"
+
+build() {
+    # Compiles the 5 .c files into the scraptest binary
+    make
+}
+
+instructions() {
+    # Uses the Makefile to install into the package destination
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}
