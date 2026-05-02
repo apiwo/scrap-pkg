@@ -5,6 +5,7 @@ info="https://github.com/apiwo/scrap-test-package"
 version="1.0.0"
 license="None"
 maintainer="apiwo"
+CLIMB=NO
 
 # Extra properties for the scrap manager
 arch="x86_64"
