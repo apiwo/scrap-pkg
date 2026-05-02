@@ -1,0 +1,25 @@
+# This is the header of a scrapfile
+name="Nano"
+desc="GNU Nano text editor."
+info="https://www.nano-editor.org/"
+version="8.3"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libc-dev, libncurses-dev"
+build-type="tarball"
+# Remote source location
+download="https://www.nano-editor.org/dist/v8/nano-8.3.tar.xz"
+build() {
+    # Configure nano with standard prefix
+    ./configure --prefix=/usr
+    # Compile
+    make
+}
+instructions() {
+    # Standard installation logic
+    # $SCRAP_PKG_DEST is the fakeroot for your package manager
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}
