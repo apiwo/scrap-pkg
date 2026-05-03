@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="xz"
+desc="XZ Utils: general-purpose data compression with LZMA2."
+info="https://tukaani.org/xz/"
+version="5.6.3"
+license="GPLv2"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://github.com/tukaani-project/xz/releases/download/v5.6.3/xz-5.6.3.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --docdir=/usr/share/doc/xz-5.6.3
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

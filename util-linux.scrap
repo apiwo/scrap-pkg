@@ -1,0 +1,31 @@
+# This is the header of a scrapfile
+name="util-linux"
+desc="Miscellaneous system utilities: mount, lsblk, fdisk, kill, and more."
+info="https://github.com/util-linux/util-linux"
+version="2.40.4"
+license="GPLv2"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev, libncurses-dev, zlib-dev"
+build-type="tarball"
+# Remote source location
+download="https://www.kernel.org/pub/linux/utils/util-linux/v2.40/util-linux-2.40.4.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --bindir=/usr/bin \
+                --sbindir=/usr/sbin \
+                --disable-chfn-chsh \
+                --disable-login \
+                --disable-nologin \
+                --disable-su \
+                --disable-setpriv \
+                --disable-runuser \
+                --disable-pylibmount \
+                --without-python
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

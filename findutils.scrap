@@ -1,0 +1,22 @@
+# This is the header of a scrapfile
+name="findutils"
+desc="GNU Find Utilities: find, xargs, and locate."
+info="https://www.gnu.org/software/findutils/"
+version="4.10.0"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/findutils/findutils-4.10.0.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --localstatedir=/var/lib/locate
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

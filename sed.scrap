@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="sed"
+desc="GNU sed: a stream editor for filtering and transforming text."
+info="https://www.gnu.org/software/sed/"
+version="4.9"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

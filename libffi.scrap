@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="libffi"
+desc="Foreign Function Interface library for calling code at runtime."
+info="https://sourceware.org/libffi/"
+version="3.4.6"
+license="MIT"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://github.com/libffi/libffi/releases/download/v3.4.6/libffi-3.4.6.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --with-gcc-arch=native
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

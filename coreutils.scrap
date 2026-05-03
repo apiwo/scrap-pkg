@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="Coreutils"
+desc="GNU core utilities: ls, cp, mv, rm, and more."
+info="https://www.gnu.org/software/coreutils/"
+version="9.5"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/coreutils/coreutils-9.5.tar.xz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="readline"
+desc="GNU Readline: a library for command-line editing."
+info="https://tiswww.case.edu/php/chet/readline/rltop.html"
+version="8.2"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev, libncurses-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --with-curses
+    make SHLIB_LIBS="-lncursesw"
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

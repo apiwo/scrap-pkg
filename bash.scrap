@@ -1,0 +1,25 @@
+# This is the header of a scrapfile
+name="Bash"
+desc="The GNU Bourne Again SHell."
+info="https://www.gnu.org/software/bash/"
+version="5.2.37"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev, libncurses-dev, libreadline-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/bash/bash-5.2.37.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --without-bash-malloc \
+                --with-installed-readline
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    # Symlink sh -> bash
+    ln -sf bash "$SCRAP_PKG_DEST/usr/bin/sh"
+}

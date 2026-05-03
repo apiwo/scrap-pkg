@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="zlib"
+desc="A massively-used lossless data compression library."
+info="https://zlib.net/"
+version="1.3.1"
+license="zlib"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make"
+build-type="tarball"
+# Remote source location
+download="https://zlib.net/zlib-1.3.1.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --libdir=/usr/lib \
+                --shared
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

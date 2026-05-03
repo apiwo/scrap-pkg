@@ -1,0 +1,28 @@
+# This is the header of a scrapfile
+name="ncurses"
+desc="Library for terminal-independent, full-screen text UI."
+info="https://invisible-island.net/ncurses/"
+version="6.5"
+license="MIT"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/ncurses/ncurses-6.5.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --mandir=/usr/share/man \
+                --with-shared \
+                --without-debug \
+                --without-normal \
+                --with-cxx-shared \
+                --enable-pc-files \
+                --with-pkg-config-libdir=/usr/lib/pkgconfig
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

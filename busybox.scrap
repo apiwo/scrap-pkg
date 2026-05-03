@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="BusyBox"
+desc="The Swiss Army Knife of embedded Linux."
+info="https://busybox.net/"
+version="1.37.0"
+license="GPLv2"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://busybox.net/downloads/busybox-1.37.0.tar.bz2"
+build() {
+    make defconfig
+    make
+}
+instructions() {
+    make CONFIG_PREFIX="$SCRAP_PKG_DEST" install
+}

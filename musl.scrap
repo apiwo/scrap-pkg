@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="musl"
+desc="Lightweight, fast, and standards-conformant C standard library."
+info="https://musl.libc.org/"
+version="1.2.5"
+license="MIT"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make"
+build-type="tarball"
+# Remote source location
+download="https://musl.libc.org/releases/musl-1.2.5.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

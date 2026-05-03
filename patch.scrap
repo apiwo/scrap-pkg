@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="patch"
+desc="GNU patch: apply a diff file to an original source."
+info="https://www.gnu.org/software/patch/"
+version="2.7.6"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

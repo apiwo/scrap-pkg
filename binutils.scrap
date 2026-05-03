@@ -1,0 +1,26 @@
+# This is the header of a scrapfile
+name="Binutils"
+desc="GNU binary utilities: ld, as, objdump, strip, and more."
+info="https://www.gnu.org/software/binutils/"
+version="2.44"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev, zlib-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/binutils/binutils-2.44.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --enable-gold \
+                --enable-ld=default \
+                --enable-plugins \
+                --enable-shared \
+                --disable-werror
+    make tooldir=/usr
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" tooldir=/usr install
+}

@@ -1,0 +1,27 @@
+# This is the header of a scrapfile
+name="GCC"
+desc="The GNU Compiler Collection: C, C++, Fortran, and more."
+info="https://gcc.gnu.org/"
+version="14.2.0"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="make, binutils, libc-dev, zlib-dev, libmpc-dev, libmpfr-dev, libgmp-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/gcc/gcc-14.2.0/gcc-14.2.0.tar.xz"
+build() {
+    mkdir -p build && cd build
+    ../configure --prefix=/usr \
+                 --enable-languages=c,c++ \
+                 --disable-multilib \
+                 --disable-bootstrap \
+                 --with-system-zlib
+    make
+}
+instructions() {
+    cd build
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

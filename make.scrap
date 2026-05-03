@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="Make"
+desc="GNU Make: a tool to control the generation of executables and other files."
+info="https://www.gnu.org/software/make/"
+version="4.4.1"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

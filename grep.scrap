@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="grep"
+desc="GNU grep: pattern matching utility."
+info="https://www.gnu.org/software/grep/"
+version="3.11"
+license="GPLv3"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev, libpcre2-dev"
+build-type="tarball"
+# Remote source location
+download="https://ftp.gnu.org/gnu/grep/grep-3.11.tar.xz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

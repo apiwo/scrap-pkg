@@ -1,0 +1,29 @@
+# This is the header of a scrapfile
+name="pcre2"
+desc="Perl Compatible Regular Expressions library (version 2)."
+info="https://github.com/PCRE2Project/pcre2"
+version="10.44"
+license="BSD-3-Clause"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev, zlib-dev, libbzip2-dev"
+build-type="tarball"
+# Remote source location
+download="https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.44/pcre2-10.44.tar.bz2"
+build() {
+    ./configure --prefix=/usr \
+                --docdir=/usr/share/doc/pcre2-10.44 \
+                --enable-unicode \
+                --enable-jit \
+                --enable-pcre2-16 \
+                --enable-pcre2-32 \
+                --enable-pcre2grep-libz \
+                --enable-pcre2grep-libbz2 \
+                --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="bzip2"
+desc="High-quality block-sorting file compressor."
+info="https://sourceware.org/bzip2/"
+version="1.0.8"
+license="BSD"
+maintainer="apiwo"
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+# Remote source location
+download="https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz"
+build() {
+    make -f Makefile-libbz2_so
+    make clean
+    make
+}
+instructions() {
+    make PREFIX="$SCRAP_PKG_DEST/usr" install
+    cp -av libbz2.so* "$SCRAP_PKG_DEST/usr/lib"
+    ln -sfv libbz2.so.1.0.8 "$SCRAP_PKG_DEST/usr/lib/libbz2.so"
+}
