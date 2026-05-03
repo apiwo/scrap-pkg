@@ -1,0 +1,302 @@
+#!/bin/bash
+if [ "$(id -u)" -ne 0 ]; then echo "This requires root permission."; exit 1; fi
+
+mkdir -p /var/lib/scpkgs/installed
+chmod 755 /var/lib/scpkgs
+chmod 755 /var/lib/scpkgs/installed
+
+# Detection for installer message
+MSG="Installed scpkgs."
+[ -f /usr/local/bin/scpkgs ] && MSG="Updated scpkgs."
+
+cat << 'EOF' > /usr/local/bin/scpkgs
+#!/bin/bash
+
+# Configuration
+REPO_RAW="https://raw.githubusercontent.com/apiwo/scrap-pkg/main"
+REPO_API="https://api.github.com/repos/apiwo/scrap-pkg/contents"
+BUILD_ROOT="/tmp/scpkgs-build"
+INSTALLED_DB="/var/lib/scpkgs/installed"
+DELETE_SOURCE="y"
+
+# Probing settings
+PROBE_OPTS="-q --spider -T 1 -t 1 --user-agent='Mozilla/5.0'"
+
+show_help() {
+    echo "scpkgs - scrap packages"
+    echo "  -u                         Sync/List packages from GitHub"
+    echo "  -update                    Run the repository update script"
+    echo "  <pkg>                      Build and install a package"
+    echo "  -n <pkg>                   Install without confirmation"
+    echo "  -r <pkg>                   Remove a package"
+    echo "  -rr <pkg>                  Force remove (no confirmation)"
+    echo "  -l                         List all installed packages"
+    echo "  -s <pkg>                   Search for a package in repo"
+    echo "  -i <pkg>                   Get detailed package info"
+    echo "  makescrap                  Generate a template .scrap file"
+    echo "  -d <pkg>                   Download source only"
+    echo "  -vc <pkg>                  Manually specify a version to install"
+    echo "  -vch <pkg>                 Hard override the source URL"
+    echo "  -c <url>                   Build/Install directly from a URL"
+    echo "  -k <pkg>                   Keep build files after installation"
+    echo "  -we <pkg>                  Treat warnings as errors & strict build"
+}
+
+makescrap_cmd() {
+    cat << 'TEMPLATE' > template.scrap
+# This is the header of a scrapfile
+name="scraptest"
+desc="test package"
+info="https://github.com/apiwo/scrap-test-package"
+version="1.0.0"
+license="None"
+maintainer="apiwo"
+CLIMB=NO
+
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="optional"
+
+depends="gcc, make, libc-dev"
+split_depend="gcc>clang"
+build_type="git"
+
+# Remote source location
+download="https://github.com/apiwo/scrap-test-package.git"
+
+build() {
+    # The manager should cd into the cloned directory automatically
+    make
+}
+
+instructions() {
+    # $SCRAP_PKG_DEST is the fakeroot for your package manager
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}
+TEMPLATE
+    echo "Created template.scrap in current directory."
+    exit 0
+}
+
+fetch_scrap() {
+    local target="/tmp/${1}.scrap"
+    # Try .scrap first, then .clump
+    wget -q --user-agent="Mozilla/5.0" "$REPO_RAW/${1}.scrap" -O "$target"
+    if [ $? -ne 0 ]; then
+        wget -q --user-agent="Mozilla/5.0" "$REPO_RAW/${1}.clump" -O "$target"
+    fi
+    if [ $? -eq 0 ] && [ -s "$target" ]; then echo "$target"; else return 1; fi
+}
+
+check_dep_installed() {
+    [ -f "$INSTALLED_DB/$1.list" ] && return 0
+    command -v "$1" >/dev/null 2>&1 && return 0
+    return 1
+}
+
+resolve_deps() {
+    local normal_deps="$1"
+    local split_deps="$2"
+
+    if [ -n "$normal_deps" ]; then
+        IFS=',' read -ra DEPS <<< "$normal_deps"
+        for d in "${DEPS[@]}"; do
+            d=$(echo "$d" | xargs)
+            if ! check_dep_installed "$d"; then
+                echo "[!] Missing dependency: $d. Attempting auto-install..."
+                scpkgs -n "$d" || { echo "Failed to install dependency: $d"; exit 1; }
+            fi
+        done
+    fi
+
+    if [ -n "$split_deps" ]; then
+        IFS=',' read -ra SDEPS <<< "$split_deps"
+        for sd in "${SDEPS[@]}"; do
+            sd=$(echo "$sd" | xargs)
+            IFS='>' read -ra ALTS <<< "$sd"
+            local found=false
+            local to_install="${ALTS[0]}"
+            for alt in "${ALTS[@]}"; do
+                alt=$(echo "$alt" | xargs)
+                if check_dep_installed "$alt"; then found=true; break; fi
+            done
+            if [ "$found" = false ]; then
+                echo "[!] Missing alternative dependency: $sd. Installing preferred: $to_install..."
+                scpkgs -n "$to_install" || { echo "Failed to install $to_install"; exit 1; }
+            fi
+        done
+    fi
+}
+
+climb_logic() {
+    local cur_v="$1"; local cur_u="$2"; local best_v="$1"; local best_u="$2"
+    if [ "$CLIMB" == "NO" ]; then FINAL_VER="$cur_v"; FINAL_URL="$cur_u"; return; fi
+    echo -n "Probing versions from $cur_v: "
+    local dots=$(echo "$cur_v" | tr -cd '.' | wc -c)
+    while true; do
+        local found_step=false
+        for lookahead in {1..3}; do
+            local major=$(echo "$cur_v" | cut -d. -f1); local minor=$(echo "$cur_v" | cut -d. -f2); local patch=$(echo "$cur_v" | cut -d. -f3)
+            if [ "$dots" -eq 2 ]; then next_v="${major}.${minor}.$((patch + lookahead))"; else next_v="${major}.$((minor + lookahead))"; fi
+            major_v="$((major + 1)).0"; [ "$dots" -eq 2 ] && major_v="$((major + 1)).0.0"
+            next_u="${cur_u//$cur_v/$next_v}"; major_u="${cur_u//$cur_v/$major_v}"; major_u="${major_u/\/v$major\//\/v$((major + 1))\/}"
+            if wget $PROBE_OPTS "$next_u"; then echo -n "-> $next_v "; cur_v="$next_v"; cur_u="$next_u"; best_v="$next_v"; best_u="$next_u"; found_step=true; break 
+            elif wget $PROBE_OPTS "$major_u"; then echo -n "-> $major_v "; cur_v="$major_v"; cur_u="$major_u"; best_v="$major_v"; best_u="$major_u"; found_step=true; break; fi
+        done
+        if [ "$found_step" = false ]; then echo "(Stable)"; break; fi
+    done
+    FINAL_VER="$best_v"; FINAL_URL="$best_u"
+}
+
+# --- Rootless Commands ---
+case "$1" in
+    ""|-h|--help) show_help; exit 0 ;;
+    -l) echo "Installed packages:"; ls "$INSTALLED_DB" 2>/dev/null | sed 's/\.list$//' | sed 's/^/  [-] /'; exit 0 ;;
+    -s) 
+        echo "Searching GitHub repo..."
+        curl -sL -H "User-Agent: scpkgs" "$REPO_API" | grep -oP '"name":\s*"\K[^"]+' | grep -E '\.(scrap|clump)$' | grep -i "$2" | sed -E 's/\.(scrap|clump)//' | sed 's/^/  [Match] /'
+        exit 0 ;;
+    -i)
+        file=$(fetch_scrap "$2")
+        if [ -f "$file" ]; then
+            sed -i 's/build-type/build_type/g' "$file"
+            echo "--- Package Info: $2 ---"
+            grep -E '^(name|version|desc|maintainer|depends|split_depend|build_type)=' "$file" | sed 's/"//g' | sed 's/=/ : /'
+            rm "$file"
+        else echo "Package not found."; fi
+        exit 0 ;;
+    makescrap) makescrap_cmd ;;
+esac
+
+# --- Root Enforcement ---
+if [ "$(id -u)" -ne 0 ]; then echo "This requires root permission."; exit 1; fi
+
+CONFIRM=true; CUSTOM=false; HARD_URL=false; DIRECT_URL=false; KEEP=false; STRICT_ERRORS=false; IS_CLUMP=false
+
+# --- Argument Parsing ---
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -u)
+            echo "Syncing with GitHub..."
+            list=$(curl -sL -H "User-Agent: scpkgs" "$REPO_API" | grep -oP '"name":\s*"\K[^"]+' | grep -E '\.(scrap|clump)$')
+            if [ -z "$list" ]; then echo "No packages found."; else for item in $list; do echo "  ${item%.*}"; done; fi
+            exit 0 ;;
+        -update)
+            echo -n "Checking for repository updates... "
+            TEMP_UPD="/tmp/scpkgs_update.sh"
+            
+            # Loading animation logic
+            (
+                wget -q "$REPO_RAW/update.txt" -O "$TEMP_UPD"
+            ) &
+            PID=$!
+            while kill -0 $PID 2>/dev/null; do
+                for frame in "|" "/" "-" "\\" "|"; do
+                    echo -ne "[ $frame ]\r"
+                    sleep 0.1
+                done
+            done
+            wait $PID
+            
+            if [ -s "$TEMP_UPD" ]; then
+                echo -e "\n[ OK ] Running update script..."
+                bash "$TEMP_UPD"
+                rm -f "$TEMP_UPD"
+            else
+                echo -e "\n[ Error ] update.txt not found or empty in repository."
+            fi
+            exit 0 ;;
+        -r|-rr)
+            PKG="$2"; [ -z "$PKG" ] && exit 1
+            [ ! -f "$INSTALLED_DB/$PKG.list" ] && echo "Not installed." && exit 1
+            [[ "$1" == "-r" ]] && read -p "Remove $PKG? [y/N]: " ans && [[ "$ans" != "y" ]] && exit 0
+            echo "Removing $PKG..."
+            while read -r f; do [ -f "$f" ] && rm -f "$f" && dirname "$f" | xargs rmdir -p 2>/dev/null; done < "$INSTALLED_DB/$PKG.list"
+            rm -f "$INSTALLED_DB/$PKG.list"; echo "Done."; exit 0 ;;
+        -vc)  CUSTOM=true; PKG="$2"; shift ;;
+        -vch) HARD_URL=true; PKG="$2"; shift ;;
+        -c)   DIRECT_URL=true; DOWNLOAD_LINK="$2"; shift ;;
+        -k)   KEEP=true; PKG="$2"; shift ;;
+        -we)  STRICT_ERRORS=true; PKG="$2"; shift ;;
+        -n)   CONFIRM=false; PKG="$2"; shift ;;
+        -d)   file=$(fetch_scrap "$2"); source "$file"; wget "$download"; exit 0 ;;
+        *)    [ -z "$PKG" ] && PKG="$1" ;;
+    esac
+    shift
+done
+
+[ -z "$PKG" ] && exit 1
+
+# --- Resolution ---
+if [ "$DIRECT_URL" = true ]; then
+    name="custom-build"; version="remote"; download="$DOWNLOAD_LINK"; build_type="tarball" 
+    build() { ./configure --prefix=/usr && make; }
+    instructions() { make DESTDIR="$SCRAP_PKG_DEST" install; }
+else
+    file=$(fetch_scrap "$PKG")
+    [ ! -f "$file" ] && echo "Package not found." && exit 1
+    
+    if grep -q "#SCPKG CLUMP" "$file" || [[ "$file" == *.clump ]]; then
+        IS_CLUMP=true; echo "This is a CLUMP file confirm?"
+    fi
+
+    sed -i 's/build-type/build_type/g' "$file"
+    source "$file"
+
+    if [ "$IS_CLUMP" = false ]; then
+        if [ "$HARD_URL" = true ]; then
+            echo "Current: $download"; read -p "New URL: " download; version="custom"
+        elif [ "$CUSTOM" = true ]; then
+            echo "Version: $version"; read -p "Target: " target_v
+            m_old=$(echo "$version" | cut -d. -f1); m_new=$(echo "$target_v" | cut -d. -f1)
+            download="${download//$version/$target_v}"; download="${download/\/v$m_old\//\/v$m_new\/}"; version="$target_v"
+            wget $PROBE_OPTS "$download" || exit 1
+        elif [ "$build_type" == "tarball" ]; then
+            climb_logic "$version" "$download"; version="$FINAL_VER"; download="$FINAL_URL"
+        fi
+    fi
+fi
+
+FINAL_MSG="Successfully installed $name $version."
+[ -f "$INSTALLED_DB/$name.list" ] && FINAL_MSG="Successfully updated $name $version."
+
+[ "$CONFIRM" != false ] && read -p "Proceed with $name? [y/N]: " ans && [[ "$ans" != "y" ]] && exit 0
+
+echo "Resolving dependencies..."
+resolve_deps "$depends" "$split_depend"
+
+if [ "$STRICT_ERRORS" = true ]; then
+    export CFLAGS="$CFLAGS -Werror"; export CXXFLAGS="$CXXFLAGS -Werror"; set -e
+fi
+
+# --- Build ---
+WORK_DIR="/tmp/scpkgs-$name"; export SCRAP_PKG_DEST="/tmp/scpkgs-dest-$name"
+rm -rf "$WORK_DIR" "$SCRAP_PKG_DEST"; mkdir -p "$WORK_DIR" "$SCRAP_PKG_DEST"; cd "$WORK_DIR"
+
+if [ "$IS_CLUMP" = true ]; then
+    grep "^source:" "$file" | cut -d':' -f2- | while read -r src; do
+        wget -q --show-progress "$src" -O piece.tar
+        tar -xf piece.tar 2>/dev/null || unzip piece.tar 2>/dev/null
+        rm piece.tar
+    done
+else
+    if [ "$build_type" == "git" ] || [[ "$download" == *.git ]]; then
+        git clone --quiet "$download" .
+    else
+        wget -q --show-progress "$download" -O src.tar
+        tar -xf src.tar --strip-components=1 2>/dev/null || tar -xf src.tar 2>/dev/null
+    fi
+fi
+
+build && instructions
+find "$SCRAP_PKG_DEST" -type f | sed "s|^$SCRAP_PKG_DEST||" > "$INSTALLED_DB/$name.list"
+cp -rv "$SCRAP_PKG_DEST"/* / 2>/dev/null
+echo "$FINAL_MSG"
+
+if [ "$KEEP" = true ]; then echo "Files kept in $WORK_DIR"
+elif [ "$DELETE_SOURCE" == "y" ]; then rm -rf "$WORK_DIR" "$SCRAP_PKG_DEST" "$file"; fi
+set +e
+EOF
+
+chmod +x /usr/local/bin/scpkgs
+echo "$MSG"
