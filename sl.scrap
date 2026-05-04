@@ -1,0 +1,31 @@
+# This is the header of a scrapfile
+name="sl"
+desc="Steam Locomotive runs across your terminal when you type 'sl' instead of 'ls'."
+info="https://github.com/mtoyoda/sl"
+version="5.05"
+license="Custom (MIT-like)"
+maintainer="apiwo"
+
+# Extra properties for the scrap manager
+arch="x86_64"
+priority="optional"
+depends="gcc, make, ncurses-dev"
+build-type="git"
+
+# Remote source location
+download="https://github.com/mtoyoda/sl/archive/refs/tags/5.05.tar.gz"
+
+build() {
+    # The sl command typically just needs a simple make call
+    # linked against ncurses
+    make
+}
+
+instructions() {
+    # Standard installation involves moving the binary and the man page
+    mkdir -p "$SCRAP_PKG_DEST/usr/bin"
+    mkdir -p "$SCRAP_PKG_DEST/usr/share/man/man1"
+    
+    cp sl "$SCRAP_PKG_DEST/usr/bin/"
+    cp sl.1 "$SCRAP_PKG_DEST/usr/share/man/man1/"
+}
