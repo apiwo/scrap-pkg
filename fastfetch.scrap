@@ -8,7 +8,7 @@ maintainer="apiwo"
 # Extra properties for the scrap manager
 arch="x86_64"
 priority="optional"
-depends="gcc, make, cmake, libpci-dev, libvulkan-dev, libxrandr-dev, libwayland-dev, zlib-dev"
+depends="gcc, make, cmake"
 build-type="git"
 # Remote source location
 download="https://github.com/fastfetch-cli/fastfetch.git"
