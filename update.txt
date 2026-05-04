@@ -25,7 +25,7 @@ PROBE_OPTS="-q --spider -T 1 -t 1 --user-agent='Mozilla/5.0'"
 show_help() {
     echo "scpkgs - scrap packages"
     echo "  -u                         Sync/List packages from GitHub"
-    echo "  -update                    Run the repository update script"
+    echo "  -update                    Sync and run the repository update script"
     echo "  <pkg>                      Build and install a package"
     echo "  -n <pkg>                   Install without confirmation"
     echo "  -r <pkg>                   Remove a package"
@@ -182,28 +182,39 @@ while [[ "$#" -gt 0 ]]; do
             if [ -z "$list" ]; then echo "No packages found."; else for item in $list; do echo "  ${item%.*}"; done; fi
             exit 0 ;;
         -update)
+            echo "Starting full repository update..."
+            
+            # 1. Sync Part
+            echo "Syncing packages..."
+            list=$(curl -sL -H "User-Agent: scpkgs" "$REPO_API" | grep -oP '"name":\s*"\K[^"]+' | grep -E '\.(scrap|clump)$')
+            for item in $list; do echo "  ${item%.*}"; done
+            
+            # 2. Update Script Part with fixed loading screen
             echo -n "Checking for repository updates... "
             TEMP_UPD="/tmp/scpkgs_update.sh"
             
-            # Loading animation logic
-            (
-                wget -q "$REPO_RAW/update.txt" -O "$TEMP_UPD"
-            ) &
+            # Fixed loading animation logic: background the fetch
+            wget -q "$REPO_RAW/update.txt" -O "$TEMP_UPD" &
             PID=$!
+            
+            # Spin while process is active
             while kill -0 $PID 2>/dev/null; do
-                for frame in "|" "/" "-" "\\" "|"; do
-                    echo -ne "[ $frame ]\r"
+                for frame in "|" "/" "-" "\\" ; do
+                    echo -ne "[$frame]\r"
                     sleep 0.1
+                    # Double check if PID still alive inside the inner loop for responsiveness
+                    kill -0 $PID 2>/dev/null || break
                 done
             done
             wait $PID
+            echo -ne "      \r" # Clear the spinner
             
             if [ -s "$TEMP_UPD" ]; then
-                echo -e "\n[ OK ] Running update script..."
+                echo "[ OK ] Running update script..."
                 bash "$TEMP_UPD"
                 rm -f "$TEMP_UPD"
             else
-                echo -e "\n[ Error ] update.txt not found or empty in repository."
+                echo "[ Error ] update.txt not found or empty in repository."
             fi
             exit 0 ;;
         -r|-rr)
@@ -251,7 +262,7 @@ else
             m_old=$(echo "$version" | cut -d. -f1); m_new=$(echo "$target_v" | cut -d. -f1)
             download="${download//$version/$target_v}"; download="${download/\/v$m_old\//\/v$m_new\/}"; version="$target_v"
             wget $PROBE_OPTS "$download" || exit 1
-        elif [ "$build_type" == "tarball" ]; then
+        elif [ "$build_type" == "tarball" ] || [ "$build_type" == "cmake" ] || [ "$build_type" == "meson" ]; then
             climb_logic "$version" "$download"; version="$FINAL_VER"; download="$FINAL_URL"
         fi
     fi
@@ -280,12 +291,37 @@ if [ "$IS_CLUMP" = true ]; then
         rm piece.tar
     done
 else
+    # Fetching Source
     if [ "$build_type" == "git" ] || [[ "$download" == *.git ]]; then
         git clone --quiet "$download" .
     else
         wget -q --show-progress "$download" -O src.tar
         tar -xf src.tar --strip-components=1 2>/dev/null || tar -xf src.tar 2>/dev/null
     fi
+    
+    # Parser understands git, plus 5 new types: cmake, meson, go, rust, python
+    case "$build_type" in
+        cmake)
+            build() { mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make; }
+            instructions() { cd build && make DESTDIR="$SCRAP_PKG_DEST" install; }
+            ;;
+        meson)
+            build() { meson setup build --prefix=/usr && ninja -C build; }
+            instructions() { DESTDIR="$SCRAP_PKG_DEST" ninja -C build install; }
+            ;;
+        go)
+            build() { go build -o "$name"; }
+            instructions() { mkdir -p "$SCRAP_PKG_DEST/usr/bin" && cp "$name" "$SCRAP_PKG_DEST/usr/bin/"; }
+            ;;
+        rust|cargo)
+            build() { cargo build --release; }
+            instructions() { mkdir -p "$SCRAP_PKG_DEST/usr/bin" && cp target/release/* "$SCRAP_PKG_DEST/usr/bin/" 2>/dev/null || true; }
+            ;;
+        python|pip)
+            build() { python3 setup.py build; }
+            instructions() { python3 setup.py install --root="$SCRAP_PKG_DEST" --optimize=1; }
+            ;;
+    esac
 fi
 
 build && instructions
