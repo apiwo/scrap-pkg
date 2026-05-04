@@ -1,0 +1,21 @@
+# This is the header of a scrap
+filename="doas"
+desc="Simple, minimal sudo alternative from OpenBSD."
+info="https://github.com/slicer69/doas"
+version="6.8.2"
+license="ISC"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libpam-dev"
+build-type="tarball"
+download="https://github.com/slicer69/doas/archive/refs/tags/6.8.2.tar.gz"
+build() {
+    make PREFIX=/usr
+}
+instructions() {
+    make PREFIX=/usr DESTDIR="$SCRAP_PKG_DEST" install
+    mkdir -p "$SCRAP_PKG_DEST/etc"
+    echo "permit persist :wheel" > "$SCRAP_PKG_DEST/etc/doas.conf"
+    chmod 0400 "$SCRAP_PKG_DEST/etc/doas.conf"
+}

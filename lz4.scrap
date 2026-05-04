@@ -1,0 +1,18 @@
+# This is the header of a scrap
+filename="lz4"
+desc="Extremely fast lossless compression library."
+info="https://lz4.github.io/lz4/"
+version="1.10.0"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://github.com/lz4/lz4/releases/download/v1.10.0/lz4-1.10.0.tar.gz"
+build() {
+    make PREFIX=/usr
+}
+instructions() {
+    make PREFIX=/usr DESTDIR="$SCRAP_PKG_DEST" install
+}

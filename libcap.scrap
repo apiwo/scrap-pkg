@@ -1,0 +1,18 @@
+# This is the header of a scrap
+filename="libcap"
+desc="POSIX 1003.1e capabilities library."
+info="https://sites.google.com/site/fullycapable/"
+version="2.73"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, linux-headers"
+build-type="tarball"
+download="https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.73.tar.xz"
+build() {
+    make prefix=/usr lib=lib
+}
+instructions() {
+    make prefix=/usr lib=lib DESTDIR="$SCRAP_PKG_DEST" install
+}

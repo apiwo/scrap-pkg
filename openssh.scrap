@@ -1,0 +1,27 @@
+# This is the header of a scrap
+filename="openssh"
+desc="OpenSSH - remote login and file transfer tools."
+info="https://www.openssh.com/"
+version="9.9p1"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, zlib-dev"
+build-type="tarball"
+download="https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-9.9p1.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc/ssh \
+                --with-md5-passwords \
+                --with-privsep-path=/var/lib/sshd \
+                --with-default-path=/usr/bin \
+                --with-superuser-path=/usr/sbin:/usr/bin \
+                --with-pid-dir=/run \
+                --with-ssl-engine
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    install -vdm755 "$SCRAP_PKG_DEST/var/lib/sshd"
+}

@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="less"
+desc="Opposite of more - a file pager."
+info="https://www.greenwoodsoftware.com/less/"
+version="668"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libncurses-dev"
+build-type="tarball"
+download="https://www.greenwoodsoftware.com/less/less-668.tar.gz"
+build() {
+    ./configure --prefix=/usr --sysconfdir=/etc
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

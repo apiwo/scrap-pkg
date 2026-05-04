@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="grub"
+desc="GNU GRUB bootloader."
+info="https://www.gnu.org/software/grub/"
+version="2.12"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, bison, flex, python3"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/grub/grub-2.12.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --disable-efiemu \
+                --disable-werror
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

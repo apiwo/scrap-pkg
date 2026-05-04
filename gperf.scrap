@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="gperf"
+desc="GNU perfect hash function generator."
+info="https://www.gnu.org/software/gperf/"
+version="3.1"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/gperf/gperf-3.1.tar.gz"
+build() {
+    ./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="automake"
+desc="GNU Automake - Makefile.in generator."
+info="https://www.gnu.org/software/automake/"
+version="1.17"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="autoconf, perl"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz"
+build() {
+    ./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.17
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

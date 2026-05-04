@@ -1,0 +1,21 @@
+# This is the header of a scrap
+filename="libelf"
+desc="ELF object file access library (elfutils)."
+info="https://sourceware.org/elfutils/"
+version="0.192"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, zlib-dev, libbzip2-dev, xz, libzstd-dev"
+build-type="tarball"
+download="https://sourceware.org/pub/elfutils/0.192/elfutils-0.192.tar.bz2"
+build() {
+    ./configure --prefix=/usr \
+                --disable-debuginfod \
+                --enable-libdebuginfod=dummy
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

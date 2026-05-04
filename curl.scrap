@@ -1,0 +1,21 @@
+# This is the header of a scrap
+filename="curl"
+desc="Command-line tool for transferring data with URLs."
+info="https://curl.se/"
+version="8.11.1"
+license="curl"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="libcurl, openssl"
+build-type="tarball"
+download="https://curl.se/download/curl-8.11.1.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --with-openssl
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

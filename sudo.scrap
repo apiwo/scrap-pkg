@@ -1,0 +1,25 @@
+# This is the header of a scrap
+filename="sudo"
+desc="Execute commands as another user."
+info="https://www.sudo.ws/"
+version="1.9.16p2"
+license="ISC"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libpam-dev"
+build-type="tarball"
+download="https://www.sudo.ws/dist/sudo-1.9.16p2.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --libexecdir=/usr/lib \
+                --with-secure-path \
+                --with-all-insults \
+                --with-env-editor \
+                --docdir=/usr/share/doc/sudo-1.9.16p2 \
+                --with-passprompt="[sudo] password for %p: "
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,23 @@
+# This is the header of a scrap
+filename="python3"
+desc="The Python 3 programming language interpreter."
+info="https://www.python.org/"
+version="3.13.1"
+license="PSF"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, zlib-dev, libbzip2-dev, libffi, openssl, readline, xz"
+build-type="tarball"
+download="https://www.python.org/ftp/python/3.13.1/Python-3.13.1.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --enable-shared \
+                --with-system-expat \
+                --enable-optimizations
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    ln -sfv python3 "$SCRAP_PKG_DEST/usr/bin/python"
+}

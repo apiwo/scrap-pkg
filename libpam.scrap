@@ -1,0 +1,24 @@
+# This is the header of a scrap
+filename="libpam"
+desc="Linux-PAM (Pluggable Authentication Modules)."
+info="https://github.com/linux-pam/linux-pam"
+version="1.7.0"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libaudit-dev, libtirpc-dev"
+build-type="tarball"
+download="https://github.com/linux-pam/linux-pam/releases/download/v1.7.0/Linux-PAM-1.7.0.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --libdir=/usr/lib \
+                --enable-securedir=/usr/lib/security \
+                --docdir=/usr/share/doc/Linux-PAM-1.7.0
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    chmod -v 4755 "$SCRAP_PKG_DEST/usr/sbin/unix_chkpwd"
+}

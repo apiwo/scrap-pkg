@@ -1,0 +1,18 @@
+# This is the header of a scrap
+filename="meson"
+desc="Fast and user-friendly build system."
+info="https://mesonbuild.com/"
+version="1.7.0"
+license="Apache-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="python3, ninja"
+build-type="tarball"
+download="https://github.com/mesonbuild/meson/releases/download/1.7.0/meson-1.7.0.tar.gz"
+build() {
+    python3 setup.py build
+}
+instructions() {
+    python3 setup.py install --root="$SCRAP_PKG_DEST" --prefix=/usr --optimize=1
+}

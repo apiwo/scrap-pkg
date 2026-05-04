@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="gzip"
+desc="GNU Gzip compression utility."
+info="https://www.gnu.org/software/gzip/"
+version="1.13"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/gzip/gzip-1.13.tar.xz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

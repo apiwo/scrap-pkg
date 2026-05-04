@@ -1,0 +1,21 @@
+# This is the header of a scrap
+filename="tar"
+desc="GNU tar archiving utility."
+info="https://www.gnu.org/software/tar/"
+version="1.35"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev, libacl-dev"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/tar/tar-1.35.tar.xz"
+build() {
+    FORCE_UNSAFE_CONFIGURE=1 \
+    ./configure --prefix=/usr \
+                --bindir=/usr/bin
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

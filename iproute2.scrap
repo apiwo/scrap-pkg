@@ -1,0 +1,18 @@
+# This is the header of a scrap
+filename="iproute2"
+desc="Utilities for controlling networking in the Linux kernel."
+info="https://wiki.linuxfoundation.org/networking/iproute2"
+version="6.12.0"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libelf-dev, libcap-dev"
+build-type="tarball"
+download="https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.12.0.tar.xz"
+build() {
+    make NETNS_RUN_DIR=/run/netns
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

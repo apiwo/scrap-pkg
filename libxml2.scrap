@@ -1,0 +1,23 @@
+# This is the header of a scrap
+filename="libxml2"
+desc="XML parsing library."
+info="https://gitlab.gnome.org/GNOME/libxml2"
+version="2.13.5"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, zlib-dev, xz, python3"
+build-type="tarball"
+download="https://download.gnome.org/sources/libxml2/2.13/libxml2-2.13.5.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --with-history \
+                --with-icu \
+                PYTHON=/usr/bin/python3
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

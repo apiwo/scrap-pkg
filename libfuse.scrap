@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="libfuse"
+desc="Filesystem in Userspace library."
+info="https://github.com/libfuse/libfuse"
+version="3.16.2"
+license="LGPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, linux-headers"
+build-type="tarball"
+download="https://github.com/libfuse/libfuse/releases/download/fuse-3.16.2/fuse-3.16.2.tar.gz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr --buildtype=release
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+    chmod u+s "$SCRAP_PKG_DEST/usr/bin/fusermount3"
+}

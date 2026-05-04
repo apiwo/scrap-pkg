@@ -1,0 +1,21 @@
+# This is the header of a scrap
+filename="libacl"
+desc="Access Control List library and utilities."
+info="https://savannah.nongnu.org/projects/acl"
+version="2.3.2"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libattr-dev"
+build-type="tarball"
+download="https://download.savannah.gnu.org/releases/acl/acl-2.3.2.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --docdir=/usr/share/doc/acl-2.3.2
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="file"
+desc="Utility for determining file type."
+info="https://www.darwinsys.com/file/"
+version="5.45"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, zlib-dev"
+build-type="tarball"
+download="https://astron.com/pub/file/file-5.45.tar.gz"
+build() {
+    ./configure --prefix=/usr --disable-bzlib
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

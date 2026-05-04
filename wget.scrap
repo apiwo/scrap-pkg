@@ -1,0 +1,21 @@
+# This is the header of a scrap
+filename="wget"
+desc="GNU Wget - non-interactive network downloader."
+info="https://www.gnu.org/software/wget/"
+version="1.25.0"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, openssl, zlib-dev, libpcre2-dev"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/wget/wget-1.25.0.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --with-ssl=openssl
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

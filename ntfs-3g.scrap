@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="ntfs-3g"
+desc="Read-write NTFS driver for Linux."
+info="https://www.tuxera.com/community/open-source-ntfs-3g/"
+version="2022.10.3"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libfuse-dev"
+build-type="tarball"
+download="https://tuxera.com/opensource/ntfs-3g_ntfsprogs-2022.10.3.tgz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --with-fuse=internal \
+                --docdir=/usr/share/doc/ntfs-3g-2022.10.3
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

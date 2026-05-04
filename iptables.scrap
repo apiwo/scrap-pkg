@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="iptables"
+desc="Linux kernel packet filtering tools."
+info="https://www.netfilter.org/projects/iptables/"
+version="1.8.11"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libmnl-dev, libnftnl-dev"
+build-type="tarball"
+download="https://www.netfilter.org/projects/iptables/files/iptables-1.8.11.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-nftables \
+                --enable-libipq \
+                --with-xtlibdir=/usr/lib/xtables
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

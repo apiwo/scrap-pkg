@@ -1,0 +1,24 @@
+# This is the header of a scrap
+filename="cmake"
+desc="Cross-platform build system generator."
+info="https://cmake.org/"
+version="3.31.4"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, openssl, zlib-dev, libcurl-dev"
+build-type="tarball"
+download="https://cmake.org/files/v3.31/cmake-3.31.4.tar.gz"
+build() {
+    ./bootstrap --prefix=/usr \
+                --system-libs \
+                --mandir=/share/man \
+                --no-system-jsoncpp \
+                --no-system-librhash \
+                --docdir=/share/doc/cmake-3.31.4
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

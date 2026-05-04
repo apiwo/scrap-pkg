@@ -1,0 +1,23 @@
+# This is the header of a scrap
+filename="procps-ng"
+desc="Utilities for monitoring system processes: ps, top, free, kill."
+info="https://gitlab.com/procps-ng/procps"
+version="4.0.4"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libncurses-dev"
+build-type="tarball"
+download="https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-4.0.4.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --docdir=/usr/share/doc/procps-ng-4.0.4 \
+                --disable-static \
+                --disable-kill \
+                --with-systemd=no
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

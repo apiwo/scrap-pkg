@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="pkgconf"
+desc="pkg-config compatible package dependency resolver."
+info="https://github.com/pkgconf/pkgconf"
+version="2.3.0"
+license="ISC"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://distfiles.ariadne.space/pkgconf/pkgconf-2.3.0.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --docdir=/usr/share/doc/pkgconf-2.3.0
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    ln -sf pkgconf "$SCRAP_PKG_DEST/usr/bin/pkg-config"
+}

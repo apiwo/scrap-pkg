@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="flex"
+desc="Fast lexical analyzer generator."
+info="https://github.com/westes/flex"
+version="2.6.4"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, m4, bison"
+build-type="tarball"
+download="https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --docdir=/usr/share/doc/flex-2.6.4 \
+                --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    ln -sf flex "$SCRAP_PKG_DEST/usr/bin/lex"
+}

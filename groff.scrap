@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="groff"
+desc="GNU troff typesetting package - needed for man pages."
+info="https://www.gnu.org/software/groff/"
+version="1.23.0"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libncurses-dev"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/groff/groff-1.23.0.tar.gz"
+build() {
+    PAGE=letter ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

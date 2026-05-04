@@ -1,0 +1,21 @@
+# This is the header of a scrap
+filename="expat"
+desc="A stream-oriented XML parser library written in C."
+info="https://libexpat.github.io/"
+version="2.6.4"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://github.com/libexpat/libexpat/releases/download/R_2_6_4/expat-2.6.4.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --docdir=/usr/share/doc/expat-2.6.4
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

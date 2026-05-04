@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="ninja"
+desc="A small, fast build system."
+info="https://ninja-build.org/"
+version="1.12.1"
+license="Apache-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, cmake"
+build-type="tarball"
+download="https://github.com/ninja-build/ninja/archive/refs/tags/v1.12.1.tar.gz"
+build() {
+    cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+    cmake --build build
+}
+instructions() {
+    install -Dm755 build/ninja "$SCRAP_PKG_DEST/usr/bin/ninja"
+}

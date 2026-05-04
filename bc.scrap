@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="bc"
+desc="GNU arbitrary precision numeric processing language."
+info="https://www.gnu.org/software/bc/"
+version="1.07.1"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, flex, readline"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/bc/bc-1.07.1.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --with-readline \
+                --mandir=/usr/share/man \
+                --infodir=/usr/share/info
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

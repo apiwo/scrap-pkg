@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="m4"
+desc="GNU M4 macro processor."
+info="https://www.gnu.org/software/m4/"
+version="1.4.19"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

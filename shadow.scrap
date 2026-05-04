@@ -1,0 +1,26 @@
+# This is the header of a scrap
+filename="shadow"
+desc="Password and account management tools (useradd, passwd, su)."
+info="https://github.com/shadow-maint/shadow"
+version="4.16.0"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libcap-dev, libpam-dev"
+build-type="tarball"
+download="https://github.com/shadow-maint/shadow/releases/download/4.16.0/shadow-4.16.0.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --disable-static \
+                --with-{b,yes}crypt \
+                --with-group-name-max-length=32
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    mkdir -p "$SCRAP_PKG_DEST/etc"
+    pwconv  2>/dev/null || true
+    grpconv 2>/dev/null || true
+}

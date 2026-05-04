@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="libattr"
+desc="Extended attribute library."
+info="https://savannah.nongnu.org/projects/attr"
+version="2.5.2"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://download.savannah.gnu.org/releases/attr/attr-2.5.2.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --sysconfdir=/etc \
+                --docdir=/usr/share/doc/attr-2.5.2
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

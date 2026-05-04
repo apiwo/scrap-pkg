@@ -1,0 +1,18 @@
+# This is the header of a scrap
+filename="libzstd"
+desc="Zstandard fast real-time compression library."
+info="https://facebook.github.io/zstd/"
+version="1.5.6"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, zlib-dev, libbzip2-dev, xz"
+build-type="tarball"
+download="https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz"
+build() {
+    make prefix=/usr
+}
+instructions() {
+    make prefix=/usr DESTDIR="$SCRAP_PKG_DEST" install
+}

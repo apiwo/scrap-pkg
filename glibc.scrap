@@ -1,0 +1,27 @@
+# This is the header of a scrap
+filename="glibc"
+desc="The GNU C Library - the standard C library for Linux systems."
+info="https://www.gnu.org/software/libc/"
+version="2.40"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, binutils, linux-headers"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/glibc/glibc-2.40.tar.xz"
+build() {
+    mkdir -p build && cd build
+    ../configure --prefix=/usr \
+                 --disable-werror \
+                 --enable-kernel=4.14 \
+                 --enable-stack-protector=strong \
+                 --with-headers=/usr/include \
+                 libc_cv_slibdir=/usr/lib
+    make
+}
+instructions() {
+    cd build
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    sed '/RTLDLIST=/s@/usr@@g' -i "$SCRAP_PKG_DEST/usr/bin/ldd"
+}

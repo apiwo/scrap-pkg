@@ -1,0 +1,19 @@
+# This is the header of a scrap
+filename="linux-headers"
+desc="Linux kernel header files for userspace development."
+info="https://www.kernel.org/"
+version="6.12.1"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="make"
+build-type="tarball"
+download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.1.tar.xz"
+build() {
+    make mrproper
+}
+instructions() {
+    make headers_install INSTALL_HDR_PATH="$SCRAP_PKG_DEST/usr"
+    find "$SCRAP_PKG_DEST/usr/include" \( -name .install -o -name ..install.cmd \) -delete
+}

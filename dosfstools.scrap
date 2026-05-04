@@ -1,0 +1,22 @@
+# This is the header of a scrap
+filename="dosfstools"
+desc="Utilities for making and checking FAT filesystems."
+info="https://github.com/dosfstools/dosfstools"
+version="4.2"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://github.com/dosfstools/dosfstools/releases/download/v4.2/dosfstools-4.2.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --enable-compat-symlinks \
+                --mandir=/usr/share/man \
+                --docdir=/usr/share/doc/dosfstools-4.2
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}
