@@ -17,15 +17,15 @@ cat << 'EOF' > /usr/local/bin/scpkgs
 REPO_RAW="https://raw.githubusercontent.com/apiwo/scrap-pkg/main"
 REPO_API="https://api.github.com/repos/apiwo/scrap-pkg/contents"
 INSTALLED_DB="/var/lib/scpkgs/installed"
-DELETE_SOURCE="y"
+SELF="/usr/local/bin/scpkgs"
 
-# Probing settings
-PROBE_OPTS="-q --spider -T 1 -t 1 --user-agent='Mozilla/5.0'"
+# Probing settings (properly quoted for direct use)
+PROBE_TIMEOUT=2
 
 show_help() {
     echo "scpkgs - Independent Linux Package Manager"
-    echo "  -u                         Sync and List packages from GitHub"
-    echo "  -update                    Run the repository maintenance script"
+    echo "  -u                         Sync/List packages from GitHub"
+    echo "  -update                    Sync and run the repository update script"
     echo "  <pkg>                      Build and install a package"
     echo "  -n <pkg>                   Install without confirmation"
     echo "  -nodeps <pkg>              Install without checking dependencies"
@@ -50,7 +50,7 @@ desc="test package"
 version="1.0.0"
 maintainer="apiwo"
 depends="gcc, make"
-build_type="tarball"
+build-type="tarball"
 download="https://example.com/src.tar.gz"
 
 build() {
@@ -68,42 +68,79 @@ TEMPLATE
 
 fetch_scrap() {
     local target="/tmp/${1}.scrap"
-    wget -q --user-agent="Mozilla/5.0" "$REPO_RAW/${1}.scrap" -O "$target"
-    if [ $? -ne 0 ]; then
-        wget -q --user-agent="Mozilla/5.0" "$REPO_RAW/${1}.clump" -O "$target"
+    wget -q --user-agent="Mozilla/5.0" "$REPO_RAW/${1}.scrap" -O "$target" 2>/dev/null
+    local rc=$?
+    if [ $rc -ne 0 ] || [ ! -s "$target" ]; then
+        wget -q --user-agent="Mozilla/5.0" "$REPO_RAW/${1}.clump" -O "$target" 2>/dev/null
+        rc=$?
     fi
-    if [ $? -eq 0 ] && [ -s "$target" ]; then echo "$target"; else return 1; fi
+    if [ $rc -eq 0 ] && [ -s "$target" ]; then
+        echo "$target"
+    else
+        rm -f "$target"
+        return 1
+    fi
 }
 
 check_dep_installed() {
     local dep="$1"
-    
-    # 1. Internal DB Check
+
+    # 1. Internal DB check
     [ -f "$INSTALLED_DB/$dep.list" ] && return 0
-    
-    # 2. Universal Binary Check (Distro agnostic path search)
+
+    # 2. Binary check
     command -v "$dep" >/dev/null 2>&1 && return 0
-    
-    # 3. Universal Filesystem Probe (Headers & Libs)
-    # This replaces ldconfig/pkg-config dependency to support Musl, Glibc, etc.
+
+    # 3. Filesystem probe — headers and libs
+    # Strip -dev suffix, strip lib prefix to get the raw library name
     local base="${dep%-dev}"
     local libname="${base#lib}"
-    
-    local paths=(
-        "/usr/include" "/usr/local/include" 
-        "/usr/lib" "/usr/lib64" "/lib" "/lib64"
+
+    # Search common header locations including subdirectories (fixes X11, GL, etc.)
+    local header_dirs=(
+        "/usr/include"
+        "/usr/local/include"
+        "/usr/include/x86_64-linux-gnu"
+        "/usr/include/X11"
+        "/usr/include/X11/extensions"
+        "/usr/include/GL"
+        "/usr/include/EGL"
+        "/usr/include/vulkan"
+        "/usr/include/wayland"
     )
-    
-    for p in "${paths[@]}"; do
-        [ -f "$p/${dep}.h" ] || [ -f "$p/${base}.h" ] || [ -f "$p/${libname}.h" ] && return 0
-        [ -f "$p/lib${libname}.so" ] || [ -f "$p/lib${libname}.a" ] && return 0
+
+    for d in "${header_dirs[@]}"; do
+        [ -f "$d/${dep}.h" ]     && return 0
+        [ -f "$d/${base}.h" ]    && return 0
+        [ -f "$d/${libname}.h" ] && return 0
     done
 
-    # 4. Final compiler link test (if gcc exists)
+    # Search common lib locations
+    local lib_dirs=(
+        "/usr/lib" "/usr/lib64" "/usr/lib/x86_64-linux-gnu"
+        "/usr/local/lib" "/usr/local/lib64"
+        "/lib" "/lib64"
+    )
+
+    for d in "${lib_dirs[@]}"; do
+        [ -f "$d/lib${libname}.so" ] && return 0
+        [ -f "$d/lib${libname}.a" ]  && return 0
+        # Also check for versioned .so files
+        ls "$d/lib${libname}.so."* >/dev/null 2>&1 && return 0
+    done
+
+    # 4. pkg-config check (most reliable for -dev packages)
+    if command -v pkg-config >/dev/null 2>&1; then
+        pkg-config --exists "$libname"    >/dev/null 2>&1 && return 0
+        pkg-config --exists "$base"       >/dev/null 2>&1 && return 0
+        pkg-config --exists "$dep"        >/dev/null 2>&1 && return 0
+    fi
+
+    # 5. Compiler link test as last resort
     if command -v gcc >/dev/null 2>&1; then
         echo "int main(){}" | gcc -x c - -l"$libname" -o /dev/null >/dev/null 2>&1 && return 0
     fi
-    
+
     return 1
 }
 
@@ -115,9 +152,16 @@ resolve_deps() {
         IFS=',' read -ra DEPS <<< "$normal_deps"
         for d in "${DEPS[@]}"; do
             d=$(echo "$d" | xargs)
+            [ -z "$d" ] && continue
             if ! check_dep_installed "$d"; then
-                echo "[!] Missing dependency: $d. Auto-installing via scpkgs..."
-                scpkgs -n "$d" || { echo "Failed to resolve $d"; exit 1; }
+                echo "[!] Missing dependency: $d. Attempting auto-install..."
+                bash "$SELF" -n "$d"
+                if [ $? -ne 0 ]; then
+                    echo "Failed to install dependency: $d"
+                    exit 1
+                fi
+            else
+                echo "[ OK ] Dependency satisfied: $d"
             fi
         done
     fi
@@ -126,148 +170,308 @@ resolve_deps() {
         IFS=',' read -ra SDEPS <<< "$split_deps"
         for sd in "${SDEPS[@]}"; do
             sd=$(echo "$sd" | xargs)
+            [ -z "$sd" ] && continue
             IFS='>' read -ra ALTS <<< "$sd"
             local found=false
             for alt in "${ALTS[@]}"; do
                 alt=$(echo "$alt" | xargs)
-                if check_dep_installed "$alt"; then found=true; break; fi
+                if check_dep_installed "$alt"; then
+                    echo "[ OK ] Alternative dependency satisfied: $alt"
+                    found=true
+                    break
+                fi
             done
             if [ "$found" = false ]; then
-                echo "[!] Missing alternative dependency: $sd. Installing preferred: ${ALTS[0]}..."
-                scpkgs -n "${ALTS[0]}" || exit 1
+                local preferred
+                preferred=$(echo "${ALTS[0]}" | xargs)
+                echo "[!] Missing alternative dependency group: $sd. Installing preferred: $preferred..."
+                bash "$SELF" -n "$preferred" || exit 1
             fi
         done
     fi
 }
 
 climb_logic() {
-    local cur_v="$1"; local cur_u="$2"; local best_v="$1"; local best_u="$2"
+    local cur_v="$1"
+    local cur_u="$2"
+    local best_v="$1"
+    local best_u="$2"
+
     [ "$CLIMB" == "NO" ] && { FINAL_VER="$cur_v"; FINAL_URL="$cur_u"; return; }
-    echo -n "Probing updates: "
-    local dots=$(echo "$cur_v" | tr -cd '.' | wc -c)
+
+    echo -n "Probing versions from $cur_v: "
+    local dots
+    dots=$(echo "$cur_v" | tr -cd '.' | wc -c)
+
     while true; do
         local found_step=false
-        for lookahead in {1..3}; do
-            local major=$(echo "$cur_v" | cut -d. -f1); local minor=$(echo "$cur_v" | cut -d. -f2); local patch=$(echo "$cur_v" | cut -d. -f3)
-            if [ "$dots" -eq 2 ]; then next_v="${major}.${minor}.$((patch + lookahead))"; else next_v="${major}.$((minor + lookahead))"; fi
-            major_v="$((major + 1)).0"; [ "$dots" -eq 2 ] && major_v="$((major + 1)).0.0"
-            next_u="${cur_u//$cur_v/$next_v}"; major_u="${cur_u//$cur_v/$major_v}"; major_u="${major_u/\/v$major\//\/v$((major + 1))\/}"
-            if wget $PROBE_OPTS "$next_u"; then echo -n "-> $next_v "; cur_v="$next_v"; cur_u="$next_u"; best_v="$next_v"; best_u="$next_u"; found_step=true; break 
-            elif wget $PROBE_OPTS "$major_u"; then echo -n "-> $major_v "; cur_v="$major_v"; cur_u="$major_u"; best_v="$major_v"; best_u="$major_u"; found_step=true; break; fi
+        for lookahead in 1 2 3; do
+            local major minor patch
+            major=$(echo "$cur_v" | cut -d. -f1)
+            minor=$(echo "$cur_v" | cut -d. -f2)
+            patch=$(echo "$cur_v" | cut -d. -f3)
+
+            local next_v major_v next_u major_u
+            if [ "$dots" -eq 2 ]; then
+                next_v="${major}.${minor}.$((patch + lookahead))"
+                major_v="$((major + 1)).0.0"
+            else
+                next_v="${major}.$((minor + lookahead))"
+                major_v="$((major + 1)).0"
+            fi
+
+            next_u="${cur_u//$cur_v/$next_v}"
+            major_u="${cur_u//$cur_v/$major_v}"
+            major_u="${major_u/\/v${major}\//\/v$((major + 1))\/}"
+
+            if wget -q --spider -T "$PROBE_TIMEOUT" -t 1 --user-agent="Mozilla/5.0" "$next_u" 2>/dev/null; then
+                echo -n "-> $next_v "
+                cur_v="$next_v"; cur_u="$next_u"
+                best_v="$next_v"; best_u="$next_u"
+                found_step=true; break
+            elif wget -q --spider -T "$PROBE_TIMEOUT" -t 1 --user-agent="Mozilla/5.0" "$major_u" 2>/dev/null; then
+                echo -n "-> $major_v "
+                cur_v="$major_v"; cur_u="$major_u"
+                best_v="$major_v"; best_u="$major_u"
+                found_step=true; break
+            fi
         done
-        [ "$found_step" = false ] && { echo "(Up-to-date)"; break; }
+        [ "$found_step" = false ] && { echo "(Stable)"; break; }
     done
-    FINAL_VER="$best_v"; FINAL_URL="$best_u"
+
+    FINAL_VER="$best_v"
+    FINAL_URL="$best_u"
 }
 
-# --- ROOTLESS ---
+# ─── ROOTLESS COMMANDS ────────────────────────────────────────────────────────
 case "$1" in
     ""|-h|--help) show_help; exit 0 ;;
-    -l) echo "Installed via scpkgs:"; ls "$INSTALLED_DB" 2>/dev/null | sed 's/\.list$//'; exit 0 ;;
-    -s) 
-        echo "Searching repository..."
-        curl -sL -H "User-Agent: scpkgs" "$REPO_API" | grep -oP '"name":\s*"\K[^"]+' | grep -E '\.(scrap|clump)$' | grep -i "$2" | sed -E 's/\.(scrap|clump)//'
+
+    -l)
+        echo "Installed via scpkgs:"
+        ls "$INSTALLED_DB" 2>/dev/null | sed 's/\.list$//'
         exit 0 ;;
+
+    -s)
+        [ -z "$2" ] && echo "Usage: scpkgs -s <term>" && exit 1
+        echo "Searching repository for '$2'..."
+        curl -sL -H "User-Agent: scpkgs" "$REPO_API" \
+            | grep -oP '"name":\s*"\K[^"]+' \
+            | grep -E '\.(scrap|clump)$' \
+            | grep -i "$2" \
+            | sed -E 's/\.(scrap|clump)//'
+        exit 0 ;;
+
     -i)
+        [ -z "$2" ] && echo "Usage: scpkgs -i <pkg>" && exit 1
         file=$(fetch_scrap "$2")
-        [ -f "$file" ] && { grep -E '^(name|version|desc|maintainer|depends)=' "$file" | sed 's/"//g'; rm "$file"; } || echo "Not found."
+        if [ -f "$file" ]; then
+            grep -E '^(name|version|desc|maintainer|depends|license|arch|priority)=' "$file" | sed 's/"//g'
+            rm -f "$file"
+        else
+            echo "Package '$2' not found in repository."
+        fi
         exit 0 ;;
+
     makescrap) makescrap_cmd ;;
 esac
 
-# --- ROOT REQUIRED ---
+# ─── ROOT REQUIRED ────────────────────────────────────────────────────────────
 if [ "$(id -u)" -ne 0 ]; then echo "Root permission required."; exit 1; fi
 
-CONFIRM=true; CUSTOM=false; HARD_URL=false; DIRECT_URL=false; KEEP=false; STRICT_ERRORS=false; IS_CLUMP=false; RESOLVE_DEPS=true
+CONFIRM=true
+CUSTOM=false
+HARD_URL=false
+DIRECT_URL=false
+KEEP=false
+STRICT_ERRORS=false
+IS_CLUMP=false
+RESOLVE_DEPS=true
+PKG=""
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -u)
-            echo "Syncing package list..."
-            curl -sL -H "User-Agent: scpkgs" "$REPO_API" | grep -oP '"name":\s*"\K[^"]+' | grep -E '\.(scrap|clump)$' | sed -E 's/\.(scrap|clump)//'
+            echo "Syncing package list from repository..."
+            echo "---"
+            curl -sL -H "User-Agent: scpkgs" "$REPO_API" \
+                | grep -oP '"name":\s*"\K[^"]+' \
+                | grep -E '\.(scrap|clump)$' \
+                | sed -E 's/\.(scrap|clump)//' \
+                | while IFS= read -r pkg; do
+                    echo "  $pkg"
+                done
+            echo "---"
             exit 0 ;;
+
         -update)
-            echo -n "Checking for maintenance script... "
             TEMP_UPD="/tmp/scpkgs_update.sh"
-            wget -q "$REPO_RAW/update.txt" -O "$TEMP_UPD" &
-            PID=$!
-            while kill -0 $PID 2>/dev/null; do for f in "|" "/" "-" "\\"; do echo -ne "[$f]\r"; sleep 0.1; done; done
-            wait $PID; echo -ne "      \r"
-            if [ -s "$TEMP_UPD" ]; then echo "[Running Update]"; bash "$TEMP_UPD"; rm -f "$TEMP_UPD"; else echo "[No Update Found]"; fi
+            echo -n "Checking for maintenance script... "
+            wget -q --user-agent="Mozilla/5.0" "$REPO_RAW/update.txt" -O "$TEMP_UPD" 2>/dev/null
+            local_rc=$?
+            echo ""
+            if [ $local_rc -eq 0 ] && [ -s "$TEMP_UPD" ]; then
+                echo "[ OK ] Running update script......"
+                bash "$TEMP_UPD"
+                rm -f "$TEMP_UPD"
+            else
+                echo "[--] No update script found."
+                rm -f "$TEMP_UPD"
+            fi
             exit 0 ;;
+
         -r|-rr)
-            PKG="$2"; [ -z "$PKG" ] && exit 1
-            [ ! -f "$INSTALLED_DB/$PKG.list" ] && echo "Not installed." && exit 1
-            [[ "$1" == "-r" ]] && read -p "Remove $PKG? [y/N]: " ans && [[ "$ans" != "y" ]] && exit 0
-            while read -r f; do [ -f "$f" ] && rm -f "$f" && dirname "$f" | xargs rmdir -p 2>/dev/null; done < "$INSTALLED_DB/$PKG.list"
-            rm -f "$INSTALLED_DB/$PKG.list"; echo "Removed."; exit 0 ;;
-        -vc)  CUSTOM=true; PKG="$2"; shift ;;
-        -vch) HARD_URL=true; PKG="$2"; shift ;;
-        -c)   DIRECT_URL=true; DOWNLOAD_LINK="$2"; shift ;;
-        -k)   KEEP=true; PKG="$2"; shift ;;
-        -we)  STRICT_ERRORS=true; PKG="$2"; shift ;;
-        -n)   CONFIRM=false; PKG="$2"; shift ;;
-        -nodeps) RESOLVE_DEPS=false; PKG="$2"; shift ;;
-        -d)   file=$(fetch_scrap "$2"); source "$file"; wget "$download"; exit 0 ;;
-        *)    [ -z "$PKG" ] && PKG="$1" ;;
+            PKG="$2"; [ -z "$PKG" ] && echo "Usage: scpkgs $1 <pkg>" && exit 1
+            if [ ! -f "$INSTALLED_DB/$PKG.list" ]; then
+                echo "Package '$PKG' is not installed."
+                exit 1
+            fi
+            if [[ "$1" == "-r" ]]; then
+                read -p "Remove $PKG? [y/N]: " ans
+                [[ "$ans" != "y" ]] && exit 0
+            fi
+            echo "Removing $PKG..."
+            while IFS= read -r f; do
+                [ -f "$f" ] && rm -f "$f" && dirname "$f" | xargs rmdir -p 2>/dev/null
+            done < "$INSTALLED_DB/$PKG.list"
+            rm -f "$INSTALLED_DB/$PKG.list"
+            echo "Removed $PKG."
+            exit 0 ;;
+
+        -vc)      CUSTOM=true;      PKG="$2"; shift ;;
+        -vch)     HARD_URL=true;    PKG="$2"; shift ;;
+        -c)       DIRECT_URL=true;  DOWNLOAD_LINK="$2"; shift ;;
+        -k)       KEEP=true;        PKG="$2"; shift ;;
+        -we)      STRICT_ERRORS=true; PKG="$2"; shift ;;
+        -n)       CONFIRM=false;    PKG="$2"; shift ;;
+        -nodeps)  RESOLVE_DEPS=false; PKG="$2"; shift ;;
+        -d)
+            file=$(fetch_scrap "$2")
+            if [ ! -f "$file" ]; then echo "Package not found."; exit 1; fi
+            sed -i 's/build-type/build_type/g' "$file"
+            source "$file"
+            echo "Downloading source for $name $version..."
+            wget "$download"
+            exit 0 ;;
+        *)  [ -z "$PKG" ] && PKG="$1" ;;
     esac
     shift
 done
 
-[ -z "$PKG" ] && exit 1
+[ -z "$PKG" ] && [ "$DIRECT_URL" = false ] && exit 1
 
-# --- Resolution ---
+# ─── PACKAGE RESOLUTION ───────────────────────────────────────────────────────
 if [ "$DIRECT_URL" = true ]; then
-    name="custom"; version="remote"; download="$DOWNLOAD_LINK"; build_type="tarball" 
-    build() { ./configure --prefix=/usr && make; }
+    name="custom"
+    version="remote"
+    download="$DOWNLOAD_LINK"
+    build_type="tarball"
+    build()        { ./configure --prefix=/usr && make; }
     instructions() { make DESTDIR="$SCRAP_PKG_DEST" install; }
 else
     file=$(fetch_scrap "$PKG")
-    [ ! -f "$file" ] && echo "Package not found." && exit 1
+    if [ ! -f "$file" ]; then
+        echo "Package '$PKG' not found in repository."
+        exit 1
+    fi
+
     grep -q "#SCPKG CLUMP" "$file" && IS_CLUMP=true
     sed -i 's/build-type/build_type/g' "$file"
     source "$file"
+
     if [ "$IS_CLUMP" = false ]; then
-        if [ "$HARD_URL" = true ]; then read -p "New URL: " download; version="custom"
+        if [ "$HARD_URL" = true ]; then
+            read -p "New source URL: " download
+            version="custom"
         elif [ "$CUSTOM" = true ]; then
-            read -p "Target Version: " target_v
-            m_old=$(echo "$version" | cut -d. -f1); m_new=$(echo "$target_v" | cut -d. -f1)
-            download="${download//$version/$target_v}"; download="${download/\/v$m_old\//\/v$m_new\/}"; version="$target_v"
+            read -p "Target version: " target_v
+            m_old=$(echo "$version" | cut -d. -f1)
+            m_new=$(echo "$target_v" | cut -d. -f1)
+            download="${download//$version/$target_v}"
+            download="${download/\/v${m_old}\//\/v${m_new}\/}"
+            version="$target_v"
         elif [[ "$build_type" =~ ^(tarball|cmake|meson)$ ]]; then
-            climb_logic "$version" "$download"; version="$FINAL_VER"; download="$FINAL_URL"
+            climb_logic "$version" "$download"
+            version="$FINAL_VER"
+            download="$FINAL_URL"
         fi
     fi
 fi
 
-[ "$CONFIRM" != false ] && read -p "Install $name $version? [y/N]: " ans && [[ "$ans" != "y" ]] && exit 0
+# ─── CONFIRM ──────────────────────────────────────────────────────────────────
+if [ "$CONFIRM" != false ]; then
+    read -p "Proceed with $name $version? [y/N]: " ans
+    [[ "$ans" != "y" ]] && exit 0
+fi
 
-[ "$RESOLVE_DEPS" = true ] && resolve_deps "$depends" "$split_depend"
+# ─── DEPENDENCIES ─────────────────────────────────────────────────────────────
+if [ "$RESOLVE_DEPS" = true ]; then
+    echo "Resolving dependencies..."
+    resolve_deps "$depends" "$split_depend"
+fi
+
 [ "$STRICT_ERRORS" = true ] && { export CFLAGS="$CFLAGS -Werror"; set -e; }
 
-# --- Build & Install ---
-WORK_DIR="/tmp/scpkgs-$name"; export SCRAP_PKG_DEST="/tmp/scpkgs-dest-$name"
-rm -rf "$WORK_DIR" "$SCRAP_PKG_DEST"; mkdir -p "$WORK_DIR" "$SCRAP_PKG_DEST"; cd "$WORK_DIR"
+# ─── BUILD ────────────────────────────────────────────────────────────────────
+WORK_DIR="/tmp/scpkgs-$name"
+export SCRAP_PKG_DEST="/tmp/scpkgs-dest-$name"
+rm -rf "$WORK_DIR" "$SCRAP_PKG_DEST"
+mkdir -p "$WORK_DIR" "$SCRAP_PKG_DEST"
+cd "$WORK_DIR" || { echo "Failed to enter work directory."; exit 1; }
 
 if [ "$IS_CLUMP" = true ]; then
-    grep "^source:" "$file" | cut -d':' -f2- | while read -r src; do
-        wget -q "$src" -O p.tar; tar -xf p.tar 2>/dev/null || unzip p.tar 2>/dev/null; rm p.tar
+    grep "^source:" "$file" | cut -d':' -f2- | while IFS= read -r src; do
+        src=$(echo "$src" | xargs)
+        wget -q --show-progress "$src" -O p.tar
+        tar -xf p.tar 2>/dev/null || unzip -q p.tar 2>/dev/null
+        rm -f p.tar
     done
 else
-    if [ "$build_type" == "git" ] || [[ "$download" == *.git ]]; then git clone --quiet "$download" .
-    else wget -q --show-progress "$download" -O src.tar; tar -xf src.tar --strip-components=1 2>/dev/null || tar -xf src.tar 2>/dev/null; fi
-    
+    if [ "$build_type" == "git" ] || [[ "$download" == *.git ]]; then
+        echo "Cloning $download..."
+        git clone --depth=1 --quiet "$download" . || { echo "Git clone failed."; exit 1; }
+    else
+        echo "Downloading $name $version..."
+        wget -q --show-progress "$download" -O src.tar || { echo "Download failed."; exit 1; }
+        tar -xf src.tar --strip-components=1 2>/dev/null || tar -xf src.tar 2>/dev/null
+        rm -f src.tar
+    fi
+
+    # Only set default build/instructions if NOT already defined by the scrapfile
     case "$build_type" in
-        cmake) build() { mkdir -p b && cd b && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make; }; instructions() { cd b && make DESTDIR="$SCRAP_PKG_DEST" install; } ;;
-        meson) build() { meson setup b --prefix=/usr && ninja -C b; }; instructions() { DESTDIR="$SCRAP_PKG_DEST" ninja -C b install; } ;;
-        go)    build() { go build -o "$name"; }; instructions() { mkdir -p "$SCRAP_PKG_DEST/usr/bin" && cp "$name" "$SCRAP_PKG_DEST/usr/bin/"; } ;;
-        rust)  build() { cargo build --release; }; instructions() { mkdir -p "$SCRAP_PKG_DEST/usr/bin" && cp target/release/* "$SCRAP_PKG_DEST/usr/bin/"; } ;;
+        cmake)
+            if ! declare -f build | grep -q cmake 2>/dev/null; then
+                build()        { mkdir -p b && cd b && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr && make; }
+                instructions() { cd b && make DESTDIR="$SCRAP_PKG_DEST" install; }
+            fi ;;
+        meson)
+            if ! declare -f build | grep -q meson 2>/dev/null; then
+                build()        { meson setup b --prefix=/usr && ninja -C b; }
+                instructions() { DESTDIR="$SCRAP_PKG_DEST" ninja -C b install; }
+            fi ;;
+        go)
+            if ! declare -f build | grep -q "go build" 2>/dev/null; then
+                build()        { go build -o "$name"; }
+                instructions() { mkdir -p "$SCRAP_PKG_DEST/usr/bin" && cp "$name" "$SCRAP_PKG_DEST/usr/bin/"; }
+            fi ;;
+        rust)
+            if ! declare -f build | grep -q cargo 2>/dev/null; then
+                build()        { cargo build --release; }
+                instructions() { mkdir -p "$SCRAP_PKG_DEST/usr/bin" && cp target/release/"$name" "$SCRAP_PKG_DEST/usr/bin/"; }
+            fi ;;
     esac
 fi
 
-build && instructions
+echo "Building $name..."
+build || { echo "Build failed for $name."; exit 1; }
+
+echo "Installing $name..."
+instructions || { echo "Install step failed for $name."; exit 1; }
+
+# ─── REGISTER & DEPLOY ────────────────────────────────────────────────────────
 find "$SCRAP_PKG_DEST" -type f | sed "s|^$SCRAP_PKG_DEST||" > "$INSTALLED_DB/$name.list"
-cp -rv "$SCRAP_PKG_DEST"/* / 2>/dev/null
-echo "Installed $name $version."
+cp -r "$SCRAP_PKG_DEST"/* / 2>/dev/null
+echo "[ OK ] Installed $name $version."
 
 [ "$KEEP" = false ] && rm -rf "$WORK_DIR" "$SCRAP_PKG_DEST" "$file"
 set +e
