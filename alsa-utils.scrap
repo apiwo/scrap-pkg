@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="alsa-utils"
+desc="ALSA utilities: amixer, aplay, alsamixer, etc."
+info="https://www.alsa-project.org/"
+version="1.2.13"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, alsa-lib, libncurses-dev"
+build-type="tarball"
+download="https://www.alsa-project.org/files/pub/utils/alsa-utils-1.2.13.tar.bz2"
+build() {
+    ./configure --prefix=/usr \
+                --disable-alsaconf \
+                --disable-bat \
+                --disable-udev \
+                --with-curses=ncursesw
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

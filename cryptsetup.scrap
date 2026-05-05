@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="cryptsetup"
+desc="Utility for setting up encrypted filesystems using dm-crypt/LUKS."
+info="https://gitlab.com/cryptsetup/cryptsetup"
+version="2.7.5"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, libdevmapper-dev, libpopt-dev, json-c-dev, libargon2-dev"
+build-type="tarball"
+download="https://www.kernel.org/pub/linux/utils/cryptsetup/v2.7/cryptsetup-2.7.5.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-ssh-token \
+                --disable-asciidoc
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

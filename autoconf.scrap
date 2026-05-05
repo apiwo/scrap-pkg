@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="autoconf"
+# This is the header of a scrapfile
+name="autoconf"
 desc="GNU Autoconf - automatic configure script builder."
 info="https://www.gnu.org/software/autoconf/"
 version="2.72"

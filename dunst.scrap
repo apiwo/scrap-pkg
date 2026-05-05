@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="dunst"
+desc="A customizable and lightweight notification daemon."
+info="https://dunst-project.org/"
+version="1.11.0"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libdbus-dev, libx11-dev, libxinerama-dev, libxrandr-dev, libxss-dev, glib2, libpango-dev, libcairo-dev, libxdg-basedir-dev, libnotify-dev"
+build-type="tarball"
+download="https://github.com/dunst-project/dunst/releases/download/v1.11.0/dunst-1.11.0.tar.gz"
+build() {
+    make PREFIX=/usr
+}
+instructions() {
+    make PREFIX=/usr DESTDIR="$SCRAP_PKG_DEST" install
+}

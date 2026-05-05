@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="dmenu"
+desc="Dynamic menu for X."
+info="https://tools.suckless.org/dmenu/"
+version="5.3"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libx11-dev, libxft-dev, libxinerama-dev, freetype2, fontconfig"
+build-type="tarball"
+download="https://dl.suckless.org/tools/dmenu-5.3.tar.gz"
+build() {
+    make PREFIX=/usr
+}
+instructions() {
+    make PREFIX=/usr DESTDIR="$SCRAP_PKG_DEST" install
+}

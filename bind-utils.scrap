@@ -1,0 +1,27 @@
+# This is the header of a scrapfile
+name="bind-utils"
+desc="DNS utilities: dig, host, nslookup."
+info="https://www.isc.org/bind/"
+version="9.20.4"
+license="MPL-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, libuv-dev, libcap-dev, libxml2, libmaxminddb-dev"
+build-type="tarball"
+download="https://ftp.isc.org/isc/bind9/9.20.4/bind-9.20.4.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --with-openssl
+    make -C lib
+    make -C bin/dig
+    make -C bin/host
+    make -C bin/nsupdate
+}
+instructions() {
+    make -C bin/dig     DESTDIR="$SCRAP_PKG_DEST" install
+    make -C bin/host    DESTDIR="$SCRAP_PKG_DEST" install
+    make -C bin/nsupdate DESTDIR="$SCRAP_PKG_DEST" install
+}

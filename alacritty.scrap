@@ -1,0 +1,22 @@
+# This is the header of a scrapfile
+name="alacritty"
+desc="A fast, GPU-accelerated terminal emulator."
+info="https://alacritty.org/"
+version="0.15.0"
+license="Apache-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libxcb-dev, libx11-dev, libxkbcommon-dev, fontconfig, freetype2"
+build-type="tarball"
+download="https://github.com/alacritty/alacritty/archive/refs/tags/v0.15.0.tar.gz"
+build() {
+    cargo build --release --locked
+}
+instructions() {
+    install -Dm755 target/release/alacritty "$SCRAP_PKG_DEST/usr/bin/alacritty"
+    mkdir -p "$SCRAP_PKG_DEST/usr/share/applications"
+    cp extra/linux/Alacritty.desktop "$SCRAP_PKG_DEST/usr/share/applications/"
+    mkdir -p "$SCRAP_PKG_DEST/usr/share/man/man1"
+    cp extra/man/alacritty.1.gz "$SCRAP_PKG_DEST/usr/share/man/man1/" 2>/dev/null || true
+}

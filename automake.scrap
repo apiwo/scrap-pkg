@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="automake"
+# This is the header of a scrapfile
+name="automake"
 desc="GNU Automake - Makefile.in generator."
 info="https://www.gnu.org/software/automake/"
 version="1.17"

@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="dust"
+desc="A more intuitive version of du (disk usage)."
+info="https://github.com/bootandy/dust"
+version="1.1.2"
+license="Apache-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+download="https://github.com/bootandy/dust/archive/refs/tags/v1.1.2.tar.gz"
+build() {
+    cargo build --release --locked
+}
+instructions() {
+    install -Dm755 target/release/dust "$SCRAP_PKG_DEST/usr/bin/dust"
+}

@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="bc"
+# This is the header of a scrapfile
+name="bc"
 desc="GNU arbitrary precision numeric processing language."
 info="https://www.gnu.org/software/bc/"
 version="1.07.1"

@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="eudev"
+desc="Standalone udev device manager (systemd-free fork)."
+info="https://github.com/eudev-project/eudev"
+version="3.2.14"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libcap-dev, libblkid-dev, gperf"
+build-type="tarball"
+download="https://github.com/eudev-project/eudev/releases/download/v3.2.14/eudev-3.2.14.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --bindir=/usr/sbin \
+                --sysconfdir=/etc \
+                --enable-manpages \
+                --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    mkdir -p "$SCRAP_PKG_DEST"/{etc,run}/udev/{rules.d,hwdb.d}
+}

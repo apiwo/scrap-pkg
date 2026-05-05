@@ -1,0 +1,29 @@
+# This is the header of a scrapfile
+name="avahi"
+desc="mDNS/DNS-SD service discovery daemon."
+info="https://avahi.org/"
+version="0.8"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, dbus, glib2, libcap-dev, libdaemon-dev"
+build-type="tarball"
+download="https://github.com/avahi/avahi/releases/download/v0.8/avahi-0.8.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --disable-static \
+                --disable-libevent \
+                --disable-mono \
+                --disable-monodoc \
+                --disable-python \
+                --disable-qt5 \
+                --enable-compat-libdns_sd \
+                --with-dbus-system-address="unix:path=/run/dbus/system_bus_socket"
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

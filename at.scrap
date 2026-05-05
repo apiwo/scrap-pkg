@@ -1,0 +1,22 @@
+# This is the header of a scrapfile
+name="at"
+desc="Job spooler for delayed execution of commands."
+info="https://github.com/nicowillis/at"
+version="3.2.5"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libpam-dev"
+build-type="tarball"
+download="https://software.calhariz.com/at/at_3.2.5.orig.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --bindir=/usr/bin \
+                --sbindir=/usr/sbin
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

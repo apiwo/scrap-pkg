@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="docker"
+desc="Platform for developing, shipping, and running applications in containers."
+info="https://www.docker.com/"
+version="27.5.1"
+license="Apache-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libseccomp-dev"
+build-type="tarball"
+CLIMB=NO
+download="https://download.docker.com/linux/static/stable/x86_64/docker-27.5.1.tgz"
+build() {
+    # Pre-built static binaries
+    true
+}
+instructions() {
+    mkdir -p "$SCRAP_PKG_DEST/usr/bin"
+    for bin in docker dockerd docker-init docker-proxy containerd containerd-shim-runc-v2 ctr runc; do
+        [ -f "docker/$bin" ] && install -Dm755 "docker/$bin" "$SCRAP_PKG_DEST/usr/bin/$bin"
+    done
+}

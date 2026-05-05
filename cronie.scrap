@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="cronie"
+desc="Cron daemon for executing scheduled commands."
+info="https://github.com/cronie-crond/cronie"
+version="1.7.2"
+license="ISC"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libpam-dev, libselinux-dev"
+build-type="tarball"
+download="https://github.com/cronie-crond/cronie/releases/download/cronie-1.7.2/cronie-1.7.2.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --without-pam \
+                --without-selinux
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

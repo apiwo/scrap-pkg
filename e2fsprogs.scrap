@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="e2fsprogs"
+# This is the header of a scrapfile
+name="e2fsprogs"
 desc="Ext2/3/4 filesystem utilities."
 info="https://e2fsprogs.sourceforge.net/"
 version="1.47.2"

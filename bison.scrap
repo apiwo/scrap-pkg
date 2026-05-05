@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="bison"
+# This is the header of a scrapfile
+name="bison"
 desc="GNU parser generator."
 info="https://www.gnu.org/software/bison/"
 version="3.8.2"

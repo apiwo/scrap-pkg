@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="dosfstools"
+# This is the header of a scrapfile
+name="dosfstools"
 desc="Utilities for making and checking FAT filesystems."
 info="https://github.com/dosfstools/dosfstools"
 version="4.2"

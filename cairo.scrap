@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="cairo"
+desc="2D graphics library with support for multiple output devices."
+info="https://www.cairographics.org/"
+version="1.18.2"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, libpng, zlib-dev, freetype2, fontconfig, libxrender-dev, libx11-dev, libxext-dev, libpixman-dev"
+build-type="tarball"
+download="https://cairographics.org/releases/cairo-1.18.2.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr --buildtype=release
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

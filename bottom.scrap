@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="bottom"
+desc="Yet another cross-platform graphical process/system monitor (btm)."
+info="https://github.com/ClementTsang/bottom"
+version="0.10.2"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+download="https://github.com/ClementTsang/bottom/archive/refs/tags/0.10.2.tar.gz"
+build() {
+    cargo build --release --locked
+}
+instructions() {
+    install -Dm755 target/release/btm "$SCRAP_PKG_DEST/usr/bin/btm"
+}

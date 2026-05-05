@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="expect"
+desc="Automates interactive applications (telnet, ftp, etc)."
+info="https://core.tcl-lang.org/expect/index"
+version="5.45.4"
+license="Public Domain"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, tcl"
+build-type="tarball"
+download="https://prdownloads.sourceforge.net/expect/expect5.45.4.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --with-tcl=/usr/lib \
+                --enable-shared \
+                --mandir=/usr/share/man \
+                --with-tclinclude=/usr/include
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    ln -sf expect5.45.4 "$SCRAP_PKG_DEST/usr/lib/expect5.45"
+}

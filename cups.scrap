@@ -1,0 +1,27 @@
+# This is the header of a scrapfile
+name="cups"
+desc="Common Unix Printing System."
+info="https://openprinting.github.io/cups/"
+version="2.4.11"
+license="Apache-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, libpam, libusb, zlib-dev, dbus"
+build-type="tarball"
+download="https://github.com/OpenPrinting/cups/releases/download/v2.4.11/cups-2.4.11-source.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --libdir=/usr/lib \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --sbindir=/usr/sbin \
+                --with-rundir=/run/cups \
+                --with-system-groups=lpadmin \
+                --with-docdir=/usr/share/cups/doc \
+                --with-dnssd=avahi
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

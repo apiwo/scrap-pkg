@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="expat"
+# This is the header of a scrapfile
+name="expat"
 desc="A stream-oriented XML parser library written in C."
 info="https://libexpat.github.io/"
 version="2.6.4"

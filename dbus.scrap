@@ -1,0 +1,26 @@
+# This is the header of a scrapfile
+name="dbus"
+desc="Message bus system for inter-process communication."
+info="https://www.freedesktop.org/wiki/Software/dbus/"
+version="1.16.0"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, cmake, glib2, expat, libcap-dev"
+build-type="tarball"
+download="https://dbus.freedesktop.org/releases/dbus/dbus-1.16.0.tar.xz"
+build() {
+    mkdir -p build && cd build
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DDBUS_SESSION_SOCKET_DIR=/run/user \
+             -DDBUS_SYSTEM_PID_FILE=/run/dbus/pid \
+             -DDBUS_SYSTEM_SOCKET=/run/dbus/system_bus_socket
+    make
+}
+instructions() {
+    cd build
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    mkdir -p "$SCRAP_PKG_DEST"/{run/dbus,var/lib/dbus}
+}

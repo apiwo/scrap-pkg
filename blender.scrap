@@ -1,0 +1,26 @@
+# This is the header of a scrapfile
+name="blender"
+desc="Free and open source 3D creation suite."
+info="https://www.blender.org/"
+version="4.3.2"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, cmake, ninja, python3, libx11-dev, libxrender-dev, libxi-dev, libxkbcommon-dev, openssl, zlib-dev, libfftw3-dev, openexr-dev, openvdb-dev, alembic-dev"
+build-type="tarball"
+download="https://download.blender.org/source/blender-4.3.2.tar.xz"
+build() {
+    mkdir -p build && cd build
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DWITH_INSTALL_PORTABLE=OFF \
+             -DWITH_PYTHON_INSTALL=OFF \
+             -DWITH_SYSTEM_GLEW=ON \
+             -DWITH_CODEC_FFMPEG=ON
+    make -j$(nproc)
+}
+instructions() {
+    cd build
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

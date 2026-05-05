@@ -1,0 +1,20 @@
+# This is the header of a scrapfile
+name="btrfs-progs"
+desc="Userspace utilities for the btrfs filesystem."
+info="https://btrfs.wiki.kernel.org/"
+version="6.12"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libzstd, liblz4-dev, zlib-dev, libblkid-dev, libuuid-dev, libelf"
+build-type="tarball"
+download="https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/btrfs-progs-v6.12.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-documentation
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

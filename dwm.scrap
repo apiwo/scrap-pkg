@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="dwm"
+desc="Dynamic window manager from suckless."
+info="https://dwm.suckless.org/"
+version="6.5"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libx11-dev, libxft-dev, libxinerama-dev, freetype2, fontconfig"
+build-type="tarball"
+download="https://dl.suckless.org/dwm/dwm-6.5.tar.gz"
+build() {
+    make PREFIX=/usr
+}
+instructions() {
+    make PREFIX=/usr DESTDIR="$SCRAP_PKG_DEST" install
+}

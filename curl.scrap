@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="curl"
+# This is the header of a scrapfile
+name="curl"
 desc="Command-line tool for transferring data with URLs."
 info="https://curl.se/"
 version="8.11.1"

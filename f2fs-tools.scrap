@@ -1,0 +1,20 @@
+# This is the header of a scrapfile
+name="f2fs-tools"
+desc="Utilities for the Flash-Friendly File System."
+info="https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git"
+version="1.16.0"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libblkid-dev, libuuid-dev, libselinux-dev"
+build-type="tarball"
+download="https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git/snapshot/f2fs-tools-1.16.0.tar.gz"
+build() {
+    autoreconf -fiv
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

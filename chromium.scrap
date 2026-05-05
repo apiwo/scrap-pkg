@@ -1,0 +1,28 @@
+# This is the header of a scrapfile
+name="chromium"
+desc="Open-source web browser from Google."
+info="https://www.chromium.org/"
+version="132.0.6834.159"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, python3, ninja, libxcb-dev, libx11-dev, libxext-dev, libxrandr-dev, libxss-dev, libdbus-dev, libpulse-dev, libpango-dev, libcups-dev, libatk-dev, libgtk-3-dev, nasm, libssl-dev"
+build-type="tarball"
+CLIMB=NO
+download="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-132.0.6834.159.tar.xz"
+build() {
+    python3 tools/gn/bootstrap/bootstrap.py --skip-generate-buildfiles
+    out/Release/gn gen out/Release \
+        --args='is_official_build=true symbol_level=0 use_system_libjpeg=true use_system_zlib=true'
+    ninja -C out/Release chrome chrome_sandbox chromedriver
+}
+instructions() {
+    mkdir -p "$SCRAP_PKG_DEST/usr/lib/chromium"
+    mkdir -p "$SCRAP_PKG_DEST/usr/bin"
+    cp out/Release/chrome          "$SCRAP_PKG_DEST/usr/lib/chromium/"
+    cp out/Release/chrome_sandbox  "$SCRAP_PKG_DEST/usr/lib/chromium/"
+    cp out/Release/chromedriver    "$SCRAP_PKG_DEST/usr/bin/"
+    ln -sf /usr/lib/chromium/chrome "$SCRAP_PKG_DEST/usr/bin/chromium"
+    chmod 4755 "$SCRAP_PKG_DEST/usr/lib/chromium/chrome_sandbox"
+}

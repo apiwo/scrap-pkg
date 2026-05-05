@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="cmake"
+# This is the header of a scrapfile
+name="cmake"
 desc="Cross-platform build system generator."
 info="https://cmake.org/"
 version="3.31.4"

@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="dhcpcd"
+# This is the header of a scrapfile
+name="dhcpcd"
 desc="DHCP and DHCPv6 client."
 info="https://github.com/NetworkConfiguration/dhcpcd"
 version="10.0.10"
