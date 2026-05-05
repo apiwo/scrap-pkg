@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="podman"
+desc="Daemonless container engine for OCI containers."
+info="https://podman.io/"
+version="5.3.2"
+license="Apache-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libseccomp-dev, libgpgme-dev, libassuan-dev, libdevmapper-dev, btrfs-progs"
+build-type="tarball"
+download="https://github.com/containers/podman/archive/refs/tags/v5.3.2.tar.gz"
+build() {
+    make BUILDTAGS="seccomp" PREFIX=/usr
+}
+instructions() {
+    make PREFIX=/usr DESTDIR="$SCRAP_PKG_DEST" install
+}

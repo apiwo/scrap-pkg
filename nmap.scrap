@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="nmap"
+desc="Network exploration tool and security scanner."
+info="https://nmap.org/"
+version="7.95"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, libpcap-dev, lua, liblinear-dev"
+build-type="tarball"
+download="https://nmap.org/dist/nmap-7.95.tar.bz2"
+build() {
+    ./configure --prefix=/usr \
+                --with-openssl=/usr \
+                --with-libpcap=included \
+                --without-ndiff \
+                --without-zenmap
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

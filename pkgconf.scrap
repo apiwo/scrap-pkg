@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="pkgconf"
+# This is the header of a scrapfile
+name="pkgconf"
 desc="pkg-config compatible package dependency resolver."
 info="https://github.com/pkgconf/pkgconf"
 version="2.3.0"

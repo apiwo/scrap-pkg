@@ -1,0 +1,20 @@
+# This is the header of a scrapfile
+name="strace"
+desc="System call tracer."
+info="https://strace.io/"
+version="6.12"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, linux-headers"
+build-type="tarball"
+download="https://github.com/strace/strace/releases/download/v6.12/strace-6.12.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --with-libdw
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="xf86-input-libinput"
+desc="X.Org input driver using libinput."
+info="https://gitlab.freedesktop.org/xorg/driver/xf86-input-libinput"
+version="1.4.0"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, xorg-server, libinput-dev"
+build-type="tarball"
+download="https://www.x.org/pub/individual/driver/xf86-input-libinput-1.4.0.tar.xz"
+build() {
+    ./configure --prefix=/usr --with-xorg-module-dir=/usr/lib/xorg/modules
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

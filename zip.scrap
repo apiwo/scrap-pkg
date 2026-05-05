@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="zip"
+desc="Compression and file packaging utility."
+info="https://infozip.sourceforge.net/Zip.html"
+version="3.0"
+license="Info-ZIP"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://downloads.sourceforge.net/infozip/zip30.tar.gz"
+build() {
+    make -f unix/Makefile generic
+}
+instructions() {
+    make prefix="$SCRAP_PKG_DEST/usr" -f unix/Makefile install
+}

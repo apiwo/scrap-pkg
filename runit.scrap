@@ -1,0 +1,28 @@
+# This is the header of a scrapfile
+name="runit"
+desc="UNIX init scheme with service supervision."
+info="http://smarden.org/runit/"
+version="2.1.2"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+download="http://smarden.org/runit/runit-2.1.2.tar.gz"
+build() {
+    cd runit-2.1.2/src
+    make
+}
+instructions() {
+    cd runit-2.1.2
+    install -Dm755 src/runit        "$SCRAP_PKG_DEST/usr/sbin/runit"
+    install -Dm755 src/runit-init   "$SCRAP_PKG_DEST/usr/sbin/runit-init"
+    install -Dm755 src/runsvdir     "$SCRAP_PKG_DEST/usr/sbin/runsvdir"
+    install -Dm755 src/runsv        "$SCRAP_PKG_DEST/usr/sbin/runsv"
+    install -Dm755 src/sv           "$SCRAP_PKG_DEST/usr/bin/sv"
+    install -Dm755 src/chpst        "$SCRAP_PKG_DEST/usr/bin/chpst"
+    install -Dm755 src/utmpset      "$SCRAP_PKG_DEST/usr/bin/utmpset"
+    install -Dm755 src/svlogd       "$SCRAP_PKG_DEST/usr/bin/svlogd"
+    mkdir -p "$SCRAP_PKG_DEST/service"
+}

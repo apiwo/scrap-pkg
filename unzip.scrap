@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="unzip"
+desc="List, test and extract compressed files in a ZIP archive."
+info="https://infozip.sourceforge.net/UnZip.html"
+version="6.0"
+license="Info-ZIP"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libc-dev"
+build-type="tarball"
+download="https://downloads.sourceforge.net/infozip/unzip60.tar.gz"
+build() {
+    make -f unix/Makefile generic
+}
+instructions() {
+    make prefix="$SCRAP_PKG_DEST/usr" -f unix/Makefile install
+}

@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="wget"
+# This is the header of a scrapfile
+name="wget"
 desc="GNU Wget - non-interactive network downloader."
 info="https://www.gnu.org/software/wget/"
 version="1.25.0"

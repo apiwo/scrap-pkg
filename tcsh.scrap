@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="tcsh"
+desc="Enhanced C shell."
+info="https://www.tcsh.org/"
+version="6.24.13"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libncurses-dev"
+build-type="tarball"
+download="https://astron.com/pub/tcsh/tcsh-6.24.13.tar.gz"
+build() {
+    ./configure --prefix=/usr --bindir=/usr/bin --mandir=/usr/share/man
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    echo "/usr/bin/tcsh" >> "$SCRAP_PKG_DEST/etc/shells"
+    ln -sf tcsh "$SCRAP_PKG_DEST/usr/bin/csh"
+}

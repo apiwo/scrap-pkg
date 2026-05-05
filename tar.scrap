@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="tar"
+# This is the header of a scrapfile
+name="tar"
 desc="GNU tar archiving utility."
 info="https://www.gnu.org/software/tar/"
 version="1.35"

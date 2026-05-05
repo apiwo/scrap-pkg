@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="yazi"
+desc="Blazing fast terminal file manager written in Rust."
+info="https://github.com/sxyazi/yazi"
+version="0.4.2"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+download="https://github.com/sxyazi/yazi/archive/refs/tags/v0.4.2.tar.gz"
+build() {
+    cargo build --release --locked
+}
+instructions() {
+    install -Dm755 target/release/yazi "$SCRAP_PKG_DEST/usr/bin/yazi"
+    install -Dm755 target/release/ya   "$SCRAP_PKG_DEST/usr/bin/ya"
+}

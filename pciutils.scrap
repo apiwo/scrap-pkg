@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="pciutils"
+desc="PCI utilities: lspci, setpci."
+info="https://mj.ucw.cz/sw/pciutils/"
+version="3.15.0"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libpci-dev, zlib-dev"
+build-type="tarball"
+download="https://mj.ucw.cz/download/linux/pci/pciutils-3.15.0.tar.gz"
+build() {
+    make PREFIX=/usr SHARED=yes ZLIB=yes
+}
+instructions() {
+    make PREFIX="$SCRAP_PKG_DEST/usr" SHARED=yes install install-lib
+}

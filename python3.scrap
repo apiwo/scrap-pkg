@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="python3"
+# This is the header of a scrapfile
+name="python3"
 desc="The Python 3 programming language interpreter."
 info="https://www.python.org/"
 version="3.13.1"

@@ -1,0 +1,26 @@
+# This is the header of a scrapfile
+name="vim"
+desc="Vi IMproved - enhanced vi text editor."
+info="https://www.vim.org/"
+version="9.1.0"
+license="Vim"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libncurses-dev, python3"
+build-type="tarball"
+download="https://github.com/vim/vim/archive/refs/tags/v9.1.0.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --with-features=huge \
+                --enable-multibyte \
+                --enable-python3interp=yes \
+                --with-python3-config-dir=$(python3-config --configdir) \
+                --enable-gui=no \
+                --with-compiledby="scpkgs"
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    ln -sf vim "$SCRAP_PKG_DEST/usr/bin/vi"
+}

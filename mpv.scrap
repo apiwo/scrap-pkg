@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="mpv"
+desc="A free, open source, and cross-platform media player."
+info="https://mpv.io/"
+version="0.39.0"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, ffmpeg, alsa-lib, libpulse-dev, libxv-dev, libxkbcommon-dev, wayland, libdrm-dev, mesa"
+build-type="tarball"
+download="https://github.com/mpv-player/mpv/archive/refs/tags/v0.39.0.tar.gz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Dlibmpv=true \
+                   -Dcplugins=true
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="psmisc"
+# This is the header of a scrapfile
+name="psmisc"
 desc="Utilities that use the /proc filesystem: killall, fuser, pstree."
 info="https://gitlab.com/psmisc/psmisc"
 version="23.7"
@@ -9,13 +9,11 @@ arch="x86_64"
 priority="required"
 depends="gcc, make, libncurses-dev"
 build-type="tarball"
-download="https://gitlab.com/psmisc/psmisc/-/archive/v23.7/psmisc-v23.7.tar.gz"
-
+download="https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-23.7.tar.xz"
 build() {
     ./configure --prefix=/usr
     make
 }
-
 instructions() {
     make DESTDIR="$SCRAP_PKG_DEST" install
 }

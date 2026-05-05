@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="waybar"
+desc="Highly customizable Wayland bar."
+info="https://github.com/Alexays/Waybar"
+version="0.11.0"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, wayland, libgtk-3-dev, libgtkmm-3.0-dev, jsoncpp-dev, libpulse-dev, libmpdclient-dev, libnl, libxkbcommon-dev, libdbusmenu-gtk3-dev, libfmt-dev, spdlog-dev"
+build-type="tarball"
+download="https://github.com/Alexays/Waybar/archive/refs/tags/0.11.0.tar.gz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Dexperimental=true \
+                   -Dtests=disabled
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="polybar"
+desc="A fast and easy-to-use status bar."
+info="https://polybar.github.io/"
+version="3.7.2"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, cmake, ninja, libcairo-dev, libxcb-dev, libxcb-ewmh-dev, libxcb-icccm-dev, libxcb-image-dev, libxcb-randr-dev, libxcb-util-dev, libxcb-xkb-dev, libxkbcommon-dev, libcurl, jsoncpp-dev, libpulse-dev, alsa-lib, libmpdclient-dev, python3"
+build-type="tarball"
+download="https://github.com/polybar/polybar/releases/download/3.7.2/polybar-3.7.2.tar.gz"
+build() {
+    mkdir -p build && cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release \
+             -DCMAKE_INSTALL_PREFIX=/usr \
+             -DBUILD_TESTS=OFF
+    make
+}
+instructions() {
+    cd build
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

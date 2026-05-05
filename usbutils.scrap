@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="usbutils"
+desc="USB utilities: lsusb."
+info="https://github.com/gregkh/usbutils"
+version="018"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libusb, libxml2"
+build-type="tarball"
+download="https://www.kernel.org/pub/linux/utils/usb/usbutils/usbutils-018.tar.xz"
+build() {
+    ./configure --prefix=/usr --datadir=/usr/share/usb.ids
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

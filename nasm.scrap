@@ -1,15 +1,15 @@
 # This is the header of a scrapfile
-name="which"
-desc="Shows the full path of shell commands."
-info="https://carlowood.github.io/which/"
-version="2.21"
-license="GPLv3"
+name="nasm"
+desc="Netwide Assembler - 80x86 assembler."
+info="https://www.nasm.us/"
+version="2.16.03"
+license="BSD"
 maintainer="apiwo"
 arch="x86_64"
-priority="required"
+priority="optional"
 depends="gcc, make"
 build-type="tarball"
-download="https://ftp.gnu.org/gnu/which/which-2.21.tar.gz"
+download="https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/nasm-2.16.03.tar.xz"
 build() {
     ./configure --prefix=/usr
     make

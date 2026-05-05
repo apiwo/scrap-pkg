@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="screen"
+desc="GNU screen terminal multiplexer."
+info="https://www.gnu.org/software/screen/"
+version="4.9.1"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libncurses-dev, libpam"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/screen/screen-4.9.1.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --infodir=/usr/share/info \
+                --mandir=/usr/share/man \
+                --with-pty-group=5 \
+                --with-sys-screenrc=/etc/screenrc
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    chmod -v 4755 "$SCRAP_PKG_DEST/usr/bin/screen"
+}

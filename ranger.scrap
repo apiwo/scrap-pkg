@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="ranger"
+desc="A VIM-inspired file manager for the console."
+info="https://ranger.github.io/"
+version="1.9.4"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="python3"
+build-type="tarball"
+download="https://github.com/ranger/ranger/archive/refs/tags/v1.9.4.tar.gz"
+build() {
+    python3 setup.py build
+}
+instructions() {
+    python3 setup.py install --root="$SCRAP_PKG_DEST" --prefix=/usr --optimize=1
+}

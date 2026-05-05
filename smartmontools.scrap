@@ -1,0 +1,22 @@
+# This is the header of a scrapfile
+name="smartmontools"
+desc="Utilities for monitoring hard drive health (smartctl, smartd)."
+info="https://www.smartmontools.org/"
+version="7.4"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libcap-dev"
+build-type="tarball"
+download="https://downloads.sourceforge.net/smartmontools/smartmontools-7.4.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --with-drivedbdir=/usr/share/smartmontools \
+                --with-libcap-ng=auto
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

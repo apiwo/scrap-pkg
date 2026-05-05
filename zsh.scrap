@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="zsh"
+desc="The Z shell."
+info="https://www.zsh.org/"
+version="5.9"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libncurses-dev, pcre2"
+build-type="tarball"
+download="https://www.zsh.org/pub/zsh-5.9.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc/zsh \
+                --enable-etcdir=/etc/zsh \
+                --enable-multibyte \
+                --enable-pcre
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    echo "/usr/bin/zsh" >> "$SCRAP_PKG_DEST/etc/shells"
+}

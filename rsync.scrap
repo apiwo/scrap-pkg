@@ -1,0 +1,22 @@
+# This is the header of a scrapfile
+name="rsync"
+desc="Fast remote file copy and synchronization tool."
+info="https://rsync.samba.org/"
+version="3.4.1"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, zlib-dev, libpopt-dev, libxxhash-dev"
+build-type="tarball"
+download="https://download.samba.org/pub/rsync/src/rsync-3.4.1.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-lz4 \
+                --disable-zstd \
+                --without-included-zlib
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

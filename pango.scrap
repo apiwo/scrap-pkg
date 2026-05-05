@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="pango"
+desc="International text rendering library."
+info="https://pango.gnome.org/"
+version="1.55.7"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, glib2, harfbuzz, fontconfig, cairo, libxft-dev"
+build-type="tarball"
+download="https://download.gnome.org/sources/pango/1.55/pango-1.55.7.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Dintrospection=disabled
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

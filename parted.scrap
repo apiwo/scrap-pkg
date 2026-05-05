@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="parted"
+desc="GNU partition editor."
+info="https://www.gnu.org/software/parted/"
+version="3.6"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libdevmapper-dev, libreadline-dev, libuuid-dev"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/parted/parted-3.6.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --disable-debug \
+                --disable-pc98 \
+                --disable-nls \
+                --disable-device-mapper
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,44 @@
+# This is the header of a scrapfile
+name="wpa-supplicant"
+desc="WPA/WPA2/IEEE 802.1X Supplicant for Wi-Fi."
+info="https://w1.fi/wpa_supplicant/"
+version="2.11"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, libnl-dev, dbus"
+build-type="tarball"
+download="https://w1.fi/releases/wpa_supplicant-2.11.tar.gz"
+build() {
+    cd wpa_supplicant
+    cat > .config << WPACONF
+CONFIG_BACKEND=file
+CONFIG_CTRL_IFACE=y
+CONFIG_DEBUG_FILE=y
+CONFIG_DRIVER_NL80211=y
+CONFIG_TLS=openssl
+CONFIG_IEEE8021X_EAPOL=y
+CONFIG_EAP_MD5=y
+CONFIG_EAP_MSCHAPV2=y
+CONFIG_EAP_TLS=y
+CONFIG_EAP_PEAP=y
+CONFIG_EAP_TTLS=y
+CONFIG_EAP_GTC=y
+CONFIG_EAP_OTP=y
+CONFIG_EAP_PWD=y
+CONFIG_WPS=y
+CONFIG_WPA_CLI_EDIT=y
+CONFIG_LIBNL32=y
+CONFIG_AP=y
+WPACONF
+    make BINDIR=/usr/sbin LIBDIR=/usr/lib
+}
+instructions() {
+    cd wpa_supplicant
+    install -Dm755 wpa_supplicant     "$SCRAP_PKG_DEST/usr/sbin/wpa_supplicant"
+    install -Dm755 wpa_cli            "$SCRAP_PKG_DEST/usr/bin/wpa_cli"
+    install -Dm755 wpa_passphrase     "$SCRAP_PKG_DEST/usr/bin/wpa_passphrase"
+    install -Dm644 doc/docbook/wpa_supplicant.conf.5 \
+                   "$SCRAP_PKG_DEST/usr/share/man/man5/wpa_supplicant.conf.5"
+}

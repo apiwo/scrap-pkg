@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="openrc"
+desc="Dependency-based init system with service supervision."
+info="https://github.com/OpenRC/openrc"
+version="0.55"
+license="BSD-2-Clause"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, libcap-dev"
+build-type="tarball"
+download="https://github.com/OpenRC/openrc/archive/refs/tags/0.55.tar.gz"
+build() {
+    make PREFIX=/usr \
+         LIBDIR=/usr/lib \
+         LIBEXECDIR=/usr/lib/rc \
+         SYSVINIT=yes
+}
+instructions() {
+    make PREFIX=/usr \
+         LIBDIR=/usr/lib \
+         LIBEXECDIR=/usr/lib/rc \
+         DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,20 @@
+# This is the header of a scrapfile
+name="wezterm"
+desc="GPU-accelerated cross-platform terminal emulator."
+info="https://wezfurlong.org/wezterm/"
+version="20240203"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libxcb-dev, libx11-dev, libxkbcommon-dev, libfontconfig-dev, openssl, zlib-dev"
+build-type="tarball"
+download="https://github.com/wez/wezterm/releases/download/20240203-110809-5046fc22/wezterm-20240203-110809-5046fc22-src.tar.gz"
+build() {
+    cargo build --release --locked
+}
+instructions() {
+    install -Dm755 target/release/wezterm       "$SCRAP_PKG_DEST/usr/bin/wezterm"
+    install -Dm755 target/release/wezterm-gui   "$SCRAP_PKG_DEST/usr/bin/wezterm-gui"
+    install -Dm755 target/release/wezterm-mux-server "$SCRAP_PKG_DEST/usr/bin/wezterm-mux-server"
+}

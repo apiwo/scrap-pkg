@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="tmux"
+desc="Terminal multiplexer."
+info="https://github.com/tmux/tmux"
+version="3.5a"
+license="ISC"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libncurses-dev, libevent-dev"
+build-type="tarball"
+download="https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz"
+build() {
+    ./configure --prefix=/usr --sysconfdir=/etc
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

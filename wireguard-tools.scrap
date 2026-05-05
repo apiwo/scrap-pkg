@@ -1,0 +1,20 @@
+# This is the header of a scrapfile
+name="wireguard-tools"
+desc="WireGuard VPN userspace tools (wg, wg-quick)."
+info="https://www.wireguard.com/"
+version="1.0.20210914"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, linux-headers"
+build-type="tarball"
+download="https://git.zx2c4.com/wireguard-tools/snapshot/wireguard-tools-1.0.20210914.tar.xz"
+build() {
+    make -C src
+}
+instructions() {
+    make -C src DESTDIR="$SCRAP_PKG_DEST" PREFIX=/usr install
+    mkdir -p "$SCRAP_PKG_DEST/etc/wireguard"
+    chmod 700 "$SCRAP_PKG_DEST/etc/wireguard"
+}

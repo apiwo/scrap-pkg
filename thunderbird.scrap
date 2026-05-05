@@ -1,0 +1,27 @@
+# This is the header of a scrapfile
+name="thunderbird"
+desc="Mozilla Thunderbird email client."
+info="https://www.thunderbird.net/"
+version="128.6.0esr"
+license="MPL-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, python3, rust, cargo, libssl-dev, libgtk-3-dev, libdbus-dev, libpulse-dev, nasm, libx11-dev, libxt-dev"
+build-type="tarball"
+CLIMB=NO
+download="https://archive.mozilla.org/pub/thunderbird/releases/128.6.0esr/source/thunderbird-128.6.0esr.source.tar.xz"
+build() {
+    cat > .mozconfig << 'MOZCONF'
+ac_add_options --enable-application=comm/mail
+ac_add_options --prefix=/usr
+ac_add_options --enable-release
+ac_add_options --enable-hardening
+ac_add_options --disable-debug
+ac_add_options --disable-tests
+MOZCONF
+    ./mach build
+}
+instructions() {
+    DESTDIR="$SCRAP_PKG_DEST" ./mach install
+}

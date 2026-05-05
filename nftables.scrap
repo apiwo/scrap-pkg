@@ -1,0 +1,22 @@
+# This is the header of a scrapfile
+name="nftables"
+desc="Netfilter tables - modern iptables replacement."
+info="https://www.nftables.org/"
+version="1.1.1"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libmnl-dev, libnftnl-dev, libreadline-dev, libjansson-dev"
+build-type="tarball"
+download="https://www.netfilter.org/projects/nftables/files/nftables-1.1.1.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --with-json \
+                --with-cli=readline
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,22 @@
+# This is the header of a scrapfile
+name="nodejs"
+desc="JavaScript runtime built on Chrome's V8 engine."
+info="https://nodejs.org/"
+version="22.13.1"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, python3, libssl-dev, zlib-dev"
+build-type="tarball"
+download="https://nodejs.org/dist/v22.13.1/node-v22.13.1.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --shared-openssl \
+                --shared-zlib \
+                --with-intl=small-icu
+    make -j$(nproc)
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

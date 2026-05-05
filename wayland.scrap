@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="wayland"
+desc="Wayland display server protocol library."
+info="https://wayland.freedesktop.org/"
+version="1.23.1"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, libffi, expat, libxml2"
+build-type="tarball"
+download="https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.23.1/downloads/wayland-1.23.1.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Ddocumentation=false \
+                   -Dtests=false
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

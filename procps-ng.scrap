@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="procps-ng"
+# This is the header of a scrapfile
+name="procps-ng"
 desc="Utilities for monitoring system processes: ps, top, free, kill."
 info="https://gitlab.com/procps-ng/procps"
 version="4.0.4"

@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="zellij"
+desc="A terminal workspace with batteries included."
+info="https://zellij.dev/"
+version="0.41.2"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+download="https://github.com/zellij-org/zellij/archive/refs/tags/v0.41.2.tar.gz"
+build() {
+    cargo build --release --locked
+}
+instructions() {
+    install -Dm755 target/release/zellij "$SCRAP_PKG_DEST/usr/bin/zellij"
+}

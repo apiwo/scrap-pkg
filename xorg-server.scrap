@@ -1,0 +1,25 @@
+# This is the header of a scrapfile
+name="xorg-server"
+desc="X.Org X Window System server."
+info="https://www.x.org/"
+version="21.1.16"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, libdrm-dev, mesa, libxcb-dev, libx11-dev, openssl, libelf-dev, libepoxy-dev"
+build-type="tarball"
+download="https://www.x.org/pub/individual/xserver/xorg-server-21.1.16.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Dxwayland=false \
+                   -Dglamor=true \
+                   -Dudev=true
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

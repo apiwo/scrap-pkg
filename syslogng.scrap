@@ -1,0 +1,25 @@
+# This is the header of a scrapfile
+name="syslogng"
+desc="Enhanced system logging daemon."
+info="https://www.syslog-ng.com/"
+version="4.8.1"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libglib2-dev, libpcre2-dev, openssl, libcap-dev"
+build-type="tarball"
+download="https://github.com/syslog-ng/syslog-ng/releases/download/syslog-ng-4.8.1/syslog-ng-4.8.1.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc/syslog-ng \
+                --localstatedir=/var/lib/syslog-ng \
+                --datadir=/usr/share \
+                --libdir=/usr/lib \
+                --disable-python \
+                --disable-java
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

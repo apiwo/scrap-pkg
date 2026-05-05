@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="npm"
+desc="Node package manager (bundled with nodejs)."
+info="https://www.npmjs.com/"
+version="10.9.2"
+license="Artistic-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="nodejs"
+build-type="tarball"
+CLIMB=NO
+download="https://registry.npmjs.org/npm/-/npm-10.9.2.tgz"
+build() {
+    true
+}
+instructions() {
+    mkdir -p "$SCRAP_PKG_DEST/usr/lib/node_modules/npm"
+    cp -r . "$SCRAP_PKG_DEST/usr/lib/node_modules/npm"
+    mkdir -p "$SCRAP_PKG_DEST/usr/bin"
+    ln -sf /usr/lib/node_modules/npm/bin/npm-cli.js "$SCRAP_PKG_DEST/usr/bin/npm"
+    ln -sf /usr/lib/node_modules/npm/bin/npx-cli.js "$SCRAP_PKG_DEST/usr/bin/npx"
+}

@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="st"
+desc="Simple terminal from suckless."
+info="https://st.suckless.org/"
+version="0.9.2"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libx11-dev, libxft-dev, libxext-dev, freetype2, fontconfig"
+build-type="tarball"
+download="https://dl.suckless.org/st/st-0.9.2.tar.gz"
+build() {
+    make PREFIX=/usr
+}
+instructions() {
+    make PREFIX=/usr DESTDIR="$SCRAP_PKG_DEST" install
+}

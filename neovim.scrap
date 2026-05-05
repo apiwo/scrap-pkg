@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="neovim"
+desc="Hyperextensible Vim-based text editor."
+info="https://neovim.io/"
+version="0.10.3"
+license="Apache-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, cmake, ninja, libncurses-dev, libuv-dev, libluajit-dev"
+build-type="tarball"
+download="https://github.com/neovim/neovim/archive/refs/tags/v0.10.3.tar.gz"
+build() {
+    make CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX=/usr
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

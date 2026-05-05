@@ -1,0 +1,26 @@
+# This is the header of a scrapfile
+name="tzdata"
+desc="Time zone and daylight saving time data."
+info="https://www.iana.org/time-zones"
+version="2025a"
+license="Public Domain"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="make"
+build-type="tarball"
+download="https://www.iana.org/time-zones/repository/releases/tzdata2025a.tar.gz"
+build() {
+    # Nothing to compile
+    true
+}
+instructions() {
+    mkdir -p "$SCRAP_PKG_DEST/usr/share/zoneinfo"
+    zic -b fat -d "$SCRAP_PKG_DEST/usr/share/zoneinfo" *.zi
+    install -Dm644 zone.tab         "$SCRAP_PKG_DEST/usr/share/zoneinfo/zone.tab"
+    install -Dm644 zone1970.tab     "$SCRAP_PKG_DEST/usr/share/zoneinfo/zone1970.tab"
+    install -Dm644 iso3166.tab      "$SCRAP_PKG_DEST/usr/share/zoneinfo/iso3166.tab"
+    cp -r "$SCRAP_PKG_DEST/usr/share/zoneinfo/UTC" \
+          "$SCRAP_PKG_DEST/usr/share/zoneinfo/posix" 2>/dev/null || true
+    echo "UTC" > "$SCRAP_PKG_DEST/etc/timezone"
+}

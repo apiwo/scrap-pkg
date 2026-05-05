@@ -1,0 +1,26 @@
+# This is the header of a scrapfile
+name="pulseaudio"
+desc="Sound server for POSIX OSes."
+info="https://www.freedesktop.org/wiki/Software/PulseAudio/"
+version="17.0"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, alsa-lib, dbus, glib2, libcap-dev"
+build-type="tarball"
+download="https://freedesktop.org/software/pulseaudio/releases/pulseaudio-17.0.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Ddaemon=true \
+                   -Ddoxygen=false \
+                   -Dbluez5=disabled \
+                   -Djack=disabled
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="ninja"
+# This is the header of a scrapfile
+name="ninja"
 desc="A small, fast build system."
 info="https://ninja-build.org/"
 version="1.12.1"

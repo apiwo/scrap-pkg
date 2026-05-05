@@ -1,0 +1,34 @@
+# This is the header of a scrapfile
+name="samba"
+desc="SMB/CIFS networking for Linux."
+info="https://www.samba.org/"
+version="4.21.3"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, python3, perl, libpam, openssl, glib2, dbus, libacl, libattr"
+build-type="tarball"
+download="https://download.samba.org/pub/samba/stable/samba-4.21.3.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --with-piddir=/run/samba \
+                --with-pammodulesdir=/usr/lib/security \
+                --without-ad-dc \
+                --without-ldap \
+                --enable-fhs
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    mkdir -p "$SCRAP_PKG_DEST/etc/samba"
+    cat > "$SCRAP_PKG_DEST/etc/samba/smb.conf" << 'CONF'
+[global]
+   workgroup = WORKGROUP
+   server string = Samba Server
+   security = user
+   map to guest = bad user
+CONF
+}

@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="tcpdump"
+desc="Network packet analyzer."
+info="https://www.tcpdump.org/"
+version="4.99.5"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libpcap, openssl"
+build-type="tarball"
+download="https://www.tcpdump.org/release/tcpdump-4.99.5.tar.gz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

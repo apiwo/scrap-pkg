@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="openssh"
+# This is the header of a scrapfile
+name="openssh"
 desc="OpenSSH - remote login and file transfer tools."
 info="https://www.openssh.com/"
 version="9.9p1"

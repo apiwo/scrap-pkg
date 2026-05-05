@@ -1,0 +1,20 @@
+# This is the header of a scrapfile
+name="p7zip"
+desc="7-Zip file archiver port for POSIX systems."
+info="https://github.com/p7zip-project/p7zip"
+version="17.05"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+download="https://github.com/p7zip-project/p7zip/archive/refs/tags/v17.05.tar.gz"
+build() {
+    make all3 OPTFLAGS="$CFLAGS"
+}
+instructions() {
+    make DEST_HOME="$SCRAP_PKG_DEST/usr" \
+         DEST_MAN="$SCRAP_PKG_DEST/usr/share/man" \
+         DEST_SHARE_DOC="$SCRAP_PKG_DEST/usr/share/doc/p7zip" install
+}

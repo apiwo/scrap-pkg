@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="midnight-commander"
+desc="Visual file manager (mc)."
+info="https://midnight-commander.org/"
+version="4.8.33"
+license="GPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libncurses-dev, libglib2-dev, libssh2-dev, libext2fs-dev"
+build-type="tarball"
+download="https://ftp.midnight-commander.org/mc-4.8.33.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --enable-charset
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

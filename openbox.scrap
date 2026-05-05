@@ -1,0 +1,26 @@
+# This is the header of a scrapfile
+name="openbox"
+desc="A lightweight, standards-compliant window manager."
+info="http://openbox.org/"
+version="3.6.1"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libx11-dev, libxext-dev, libxinerama-dev, libxrandr-dev, libxft-dev, libxml2, libpango-dev, libglib2-dev, libimlib2-dev, libstartup-notification-dev"
+build-type="tarball"
+download="http://openbox.org/dist/openbox/openbox-3.6.1.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    mkdir -p "$SCRAP_PKG_DEST/etc/xdg/openbox"
+    cp data/rc.xml      "$SCRAP_PKG_DEST/etc/xdg/openbox/"
+    cp data/menu.xml    "$SCRAP_PKG_DEST/etc/xdg/openbox/"
+    cp data/autostart   "$SCRAP_PKG_DEST/etc/xdg/openbox/"
+    cp data/environment "$SCRAP_PKG_DEST/etc/xdg/openbox/"
+}

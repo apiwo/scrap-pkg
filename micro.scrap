@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="micro"
+desc="A modern and intuitive terminal-based text editor."
+info="https://micro-editor.github.io/"
+version="2.0.14"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc"
+build-type="tarball"
+download="https://github.com/zyedidia/micro/releases/download/v2.0.14/micro-2.0.14-linux64-static.tar.gz"
+build() {
+    # Pre-built static binary — nothing to compile
+    true
+}
+instructions() {
+    mkdir -p "$SCRAP_PKG_DEST/usr/bin"
+    cp micro-2.0.14/micro "$SCRAP_PKG_DEST/usr/bin/micro"
+    chmod 755 "$SCRAP_PKG_DEST/usr/bin/micro"
+}

@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="wayland-protocols"
+desc="Wayland protocol extensions."
+info="https://gitlab.freedesktop.org/wayland/wayland-protocols"
+version="1.38"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="make, meson, ninja, wayland"
+build-type="tarball"
+download="https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.38/downloads/wayland-protocols-1.38.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr --buildtype=release
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

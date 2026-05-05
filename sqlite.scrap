@@ -1,0 +1,28 @@
+# This is the header of a scrapfile
+name="sqlite"
+desc="Self-contained, serverless SQL database engine."
+info="https://www.sqlite.org/"
+version="3.47.2"
+license="Public Domain"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, readline, zlib-dev"
+build-type="tarball"
+download="https://www.sqlite.org/2024/sqlite-autoconf-3470200.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --enable-fts5 \
+                CPPFLAGS="-DSQLITE_ENABLE_FTS3=1 \
+                           -DSQLITE_ENABLE_FTS4=1 \
+                           -DSQLITE_ENABLE_COLUMN_METADATA=1 \
+                           -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 \
+                           -DSQLITE_ENABLE_DBSTAT_VTAB=1 \
+                           -DSQLITE_SECURE_DELETE=1 \
+                           -DSQLITE_ENABLE_JSON1=1"
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

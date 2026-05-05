@@ -1,0 +1,25 @@
+# This is the header of a scrapfile
+name="vlc"
+desc="VLC media player."
+info="https://www.videolan.org/"
+version="3.0.21"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, ffmpeg, libxcb-dev, libxcb-composite-dev, alsa-lib, libpulse-dev, libdbus-dev, libglib2-dev, lua, libfreetype2-dev, fontconfig, libvorbis-dev, libmad-dev"
+build-type="tarball"
+download="https://download.videolan.org/pub/videolan/vlc/3.0.21/vlc-3.0.21.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-qt \
+                --enable-ncurses \
+                --enable-alsa \
+                --enable-pulse \
+                --disable-a52 \
+                --disable-update-check
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

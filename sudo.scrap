@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="sudo"
+# This is the header of a scrapfile
+name="sudo"
 desc="Execute commands as another user."
 info="https://www.sudo.ws/"
 version="1.9.16p2"

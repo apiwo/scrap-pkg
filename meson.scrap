@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="meson"
+# This is the header of a scrapfile
+name="meson"
 desc="Fast and user-friendly build system."
 info="https://mesonbuild.com/"
 version="1.7.0"

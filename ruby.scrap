@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="ruby"
+desc="The Ruby programming language."
+info="https://www.ruby-lang.org/"
+version="3.4.1"
+license="Ruby"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, zlib-dev, readline, libffi, libgdbm"
+build-type="tarball"
+download="https://cache.ruby-lang.org/pub/ruby/3.4/ruby-3.4.1.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --enable-shared \
+                --disable-rpath
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

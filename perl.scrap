@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="perl"
+# This is the header of a scrapfile
+name="perl"
 desc="The Perl programming language interpreter."
 info="https://www.perl.org/"
 version="5.40.0"

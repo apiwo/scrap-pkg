@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="rofi"
+desc="A window switcher, application launcher and dmenu replacement."
+info="https://github.com/davatorium/rofi"
+version="1.7.5"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, libxcb-dev, libxcb-util-dev, libxcb-ewmh-dev, libxcb-icccm-dev, libxkbcommon-dev, libpango-dev, libcairo-dev, libglib2-dev, librsvg-dev"
+build-type="tarball"
+download="https://github.com/davatorium/rofi/releases/download/1.7.5/rofi-1.7.5.tar.gz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr --buildtype=release
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

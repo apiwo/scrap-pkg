@@ -1,0 +1,25 @@
+# This is the header of a scrapfile
+name="tcl"
+desc="Tool Command Language interpreter."
+info="https://www.tcl-lang.org/"
+version="8.6.15"
+license="TCL"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, zlib-dev"
+build-type="tarball"
+download="https://downloads.sourceforge.net/tcl/tcl8.6.15-src.tar.gz"
+build() {
+    cd unix
+    ./configure --prefix=/usr \
+                --mandir=/usr/share/man \
+                --enable-64bit
+    make
+}
+instructions() {
+    cd unix
+    make DESTDIR="$SCRAP_PKG_DEST" install install-private-headers
+    ln -sf tclsh8.6 "$SCRAP_PKG_DEST/usr/bin/tclsh"
+    chmod -v 755 "$SCRAP_PKG_DEST/usr/lib/libtcl8.6.so"
+}

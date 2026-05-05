@@ -1,0 +1,26 @@
+# This is the header of a scrapfile
+name="networkmanager"
+desc="Network connection manager and user applications."
+info="https://networkmanager.dev/"
+version="1.50.0"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, dbus, glib2, libndp-dev, libnl, libpsl-dev, wpa-supplicant"
+build-type="tarball"
+download="https://download.gnome.org/sources/NetworkManager/1.50/NetworkManager-1.50.0.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Dsystemd_journal=false \
+                   -Dmodify_system=true \
+                   -Dpolkit=false \
+                   -Dsession_tracking=no
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

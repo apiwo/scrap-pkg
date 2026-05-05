@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="openvpn"
+desc="Open source VPN daemon."
+info="https://openvpn.net/"
+version="2.6.13"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl, libpam, liblz4-dev, libcap-ng-dev, libnl"
+build-type="tarball"
+download="https://swupdate.openvpn.org/community/releases/openvpn-2.6.13.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sbindir=/usr/sbin \
+                --enable-iproute2 \
+                --with-crypto-library=openssl
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    mkdir -p "$SCRAP_PKG_DEST/etc/openvpn"
+}

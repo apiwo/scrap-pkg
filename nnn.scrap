@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="nnn"
+desc="The unorthodox terminal file manager."
+info="https://github.com/jarun/nnn"
+version="5.0"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libncurses-dev"
+build-type="tarball"
+download="https://github.com/jarun/nnn/releases/download/v5.0/nnn-v5.0.tar.gz"
+build() {
+    make O_NERD=1 O_GITSTATUS=1
+}
+instructions() {
+    make PREFIX=/usr DESTDIR="$SCRAP_PKG_DEST" install
+}

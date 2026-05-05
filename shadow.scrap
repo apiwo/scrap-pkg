@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="shadow"
+# This is the header of a scrapfile
+name="shadow"
 desc="Password and account management tools (useradd, passwd, su)."
 info="https://github.com/shadow-maint/shadow"
 version="4.16.0"

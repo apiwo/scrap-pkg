@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="xfsprogs"
+desc="XFS filesystem utilities."
+info="https://xfs.wiki.kernel.org/"
+version="6.12.0"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libuuid-dev, libblkid-dev, libinih-dev"
+build-type="tarball"
+download="https://www.kernel.org/pub/linux/utils/fs/xfs/xfsprogs/xfsprogs-6.12.0.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sbindir=/usr/sbin \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --enable-editline=no
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}
