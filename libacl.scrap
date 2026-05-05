@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="libacl"
+# This is the header of a scrapfile
+name="libacl"
 desc="Access Control List library and utilities."
 info="https://savannah.nongnu.org/projects/acl"
 version="2.3.2"

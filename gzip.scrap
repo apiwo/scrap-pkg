@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="gzip"
+# This is the header of a scrapfile
+name="gzip"
 desc="GNU Gzip compression utility."
 info="https://www.gnu.org/software/gzip/"
 version="1.13"

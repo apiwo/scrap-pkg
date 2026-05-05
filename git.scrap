@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="git"
+# This is the header of a scrapfile
+name="git"
 desc="Distributed version control system."
 info="https://git-scm.com/"
 version="2.47.1"

@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="libnl"
+desc="Netlink socket library for Linux kernel communication."
+info="https://www.infradead.org/~tgr/libnl/"
+version="3.11.0"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, linux-headers"
+build-type="tarball"
+download="https://github.com/thom311/libnl/releases/download/libnl3_11_0/libnl-3.11.0.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

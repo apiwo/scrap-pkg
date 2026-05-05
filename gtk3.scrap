@@ -1,0 +1,27 @@
+# This is the header of a scrapfile
+name="gtk3"
+desc="GIMP Toolkit - graphical widget library (version 3)."
+info="https://www.gtk.org/"
+version="3.24.43"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, glib2, cairo, pango, libpng, libepoxy-dev, libxkbcommon-dev, wayland, at-spi2-core"
+build-type="tarball"
+download="https://download.gnome.org/sources/gtk/3.24/gtk+-3.24.43.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Dbroadway_backend=true \
+                   -Dintrospection=false \
+                   -Ddemos=false \
+                   -Dexamples=false \
+                   -Dtests=false
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

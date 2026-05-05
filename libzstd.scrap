@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="libzstd"
+# This is the header of a scrapfile
+name="libzstd"
 desc="Zstandard fast real-time compression library."
 info="https://facebook.github.io/zstd/"
 version="1.5.6"

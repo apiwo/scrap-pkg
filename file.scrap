@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="file"
+# This is the header of a scrapfile
+name="file"
 desc="Utility for determining file type."
 info="https://www.darwinsys.com/file/"
 version="5.45"

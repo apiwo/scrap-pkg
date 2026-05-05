@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="helix"
+desc="A post-modern modal text editor."
+info="https://helix-editor.com/"
+version="25.01.1"
+license="MPL-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="git"
+download="https://github.com/helix-editor/helix.git"
+build() {
+    cargo build --release --locked
+}
+instructions() {
+    mkdir -p "$SCRAP_PKG_DEST/usr/bin"
+    mkdir -p "$SCRAP_PKG_DEST/usr/share/helix"
+    cp target/release/hx "$SCRAP_PKG_DEST/usr/bin/hx"
+    cp -r runtime "$SCRAP_PKG_DEST/usr/share/helix/runtime"
+}

@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="libpng"
+desc="PNG image format library."
+info="http://www.libpng.org/pub/png/libpng.html"
+version="1.6.45"
+license="libpng"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, zlib-dev"
+build-type="tarball"
+download="https://downloads.sourceforge.net/libpng/libpng-1.6.45.tar.xz"
+build() {
+    ./configure --prefix=/usr --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

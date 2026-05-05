@@ -1,0 +1,27 @@
+# This is the header of a scrapfile
+name="libreoffice"
+desc="Free and open source office suite."
+info="https://www.libreoffice.org/"
+version="24.8.4"
+license="MPL-2.0"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, perl, python3, libxml2, libxslt-dev, openssl, libpng, libjpeg-turbo, zlib-dev, glib2, gtk3, cups, libcurl"
+build-type="tarball"
+CLIMB=NO
+download="https://download.documentfoundation.org/libreoffice/src/24.8.4/libreoffice-24.8.4.0.1.tar.xz"
+build() {
+    ./autogen.sh --prefix=/usr \
+                 --sysconfdir=/etc \
+                 --with-vendor="scpkgs" \
+                 --disable-report-builder \
+                 --without-java \
+                 --without-junit \
+                 --disable-dconf \
+                 --enable-release-build
+    make build
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" distro-pack-install
+}

@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="hdparm"
+desc="Get and set hard disk parameters."
+info="https://sourceforge.net/projects/hdparm/"
+version="9.65"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+download="https://downloads.sourceforge.net/hdparm/hdparm-9.65.tar.gz"
+build() {
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

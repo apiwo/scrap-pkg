@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="jq"
+desc="Lightweight command-line JSON processor."
+info="https://jqlang.github.io/jq/"
+version="1.7.1"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libonig-dev"
+build-type="tarball"
+download="https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --disable-static \
+                --with-oniguruma=builtin
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

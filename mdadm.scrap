@@ -1,0 +1,18 @@
+# This is the header of a scrapfile
+name="mdadm"
+desc="Manage MD (software) RAID arrays."
+info="https://neil.brown.name/mdadm/"
+version="4.3"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libudev-dev"
+build-type="tarball"
+download="https://www.kernel.org/pub/linux/utils/raid/mdadm/mdadm-4.3.tar.xz"
+build() {
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

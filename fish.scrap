@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="fish"
+desc="The friendly interactive shell."
+info="https://fishshell.com/"
+version="3.7.1"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, cmake, libncurses-dev, pcre2"
+build-type="tarball"
+download="https://github.com/fish-shell/fish-shell/releases/download/3.7.1/fish-3.7.1.tar.xz"
+build() {
+    mkdir -p build && cd build
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
+             -DCMAKE_BUILD_TYPE=Release
+    make
+}
+instructions() {
+    cd build
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    echo "/usr/bin/fish" >> "$SCRAP_PKG_DEST/etc/shells"
+}

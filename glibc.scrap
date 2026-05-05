@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="glibc"
+# This is the header of a scrapfile
+name="glibc"
 desc="The GNU C Library - the standard C library for Linux systems."
 info="https://www.gnu.org/software/libc/"
 version="2.40"

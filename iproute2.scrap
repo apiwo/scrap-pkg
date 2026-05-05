@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="iproute2"
+# This is the header of a scrapfile
+name="iproute2"
 desc="Utilities for controlling networking in the Linux kernel."
 info="https://wiki.linuxfoundation.org/networking/iproute2"
 version="6.12.0"

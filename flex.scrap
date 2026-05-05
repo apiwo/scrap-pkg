@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="flex"
+# This is the header of a scrapfile
+name="flex"
 desc="Fast lexical analyzer generator."
 info="https://github.com/westes/flex"
 version="2.6.4"

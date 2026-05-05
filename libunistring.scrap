@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="libunistring"
+desc="GNU Unicode string library."
+info="https://www.gnu.org/software/libunistring/"
+version="1.3"
+license="LGPLv3"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make"
+build-type="tarball"
+download="https://ftp.gnu.org/gnu/libunistring/libunistring-1.3.tar.xz"
+build() {
+    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/libunistring-1.3
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

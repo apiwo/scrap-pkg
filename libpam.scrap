@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="libpam"
+# This is the header of a scrapfile
+name="libpam"
 desc="Linux-PAM (Pluggable Authentication Modules)."
 info="https://github.com/linux-pam/linux-pam"
 version="1.7.0"

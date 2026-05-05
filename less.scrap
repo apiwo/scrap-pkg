@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="less"
+# This is the header of a scrapfile
+name="less"
 desc="Opposite of more - a file pager."
 info="https://www.greenwoodsoftware.com/less/"
 version="668"

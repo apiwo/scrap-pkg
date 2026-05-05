@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="libcap"
+# This is the header of a scrapfile
+name="libcap"
 desc="POSIX 1003.1e capabilities library."
 info="https://sites.google.com/site/fullycapable/"
 version="2.73"

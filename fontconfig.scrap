@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="fontconfig"
+desc="Font configuration and customization library."
+info="https://www.freedesktop.org/wiki/Software/fontconfig/"
+version="2.16.0"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, freetype2, expat, libxml2"
+build-type="tarball"
+download="https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.16.0.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --disable-docs \
+                --docdir=/usr/share/doc/fontconfig-2.16.0
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

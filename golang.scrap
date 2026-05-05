@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="golang"
+desc="The Go programming language toolchain."
+info="https://go.dev/"
+version="1.23.5"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make"
+build-type="tarball"
+CLIMB=NO
+download="https://go.dev/dl/go1.23.5.linux-amd64.tar.gz"
+build() {
+    # Pre-built binary distribution
+    true
+}
+instructions() {
+    mkdir -p "$SCRAP_PKG_DEST/usr/local"
+    cp -r . "$SCRAP_PKG_DEST/usr/local/go"
+    mkdir -p "$SCRAP_PKG_DEST/usr/bin"
+    ln -sf /usr/local/go/bin/go   "$SCRAP_PKG_DEST/usr/bin/go"
+    ln -sf /usr/local/go/bin/gofmt "$SCRAP_PKG_DEST/usr/bin/gofmt"
+}

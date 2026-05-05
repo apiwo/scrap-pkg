@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="grub"
+# This is the header of a scrapfile
+name="grub"
 desc="GNU GRUB bootloader."
 info="https://www.gnu.org/software/grub/"
 version="2.12"

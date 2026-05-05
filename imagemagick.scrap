@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="imagemagick"
+desc="Software suite to create, edit, compose, or convert images."
+info="https://imagemagick.org/"
+version="7.1.1-43"
+license="ImageMagick"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libpng, libjpeg-turbo, zlib-dev, libxml2, freetype2, fontconfig, openssl"
+build-type="tarball"
+download="https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.1-43.tar.gz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --enable-hdri \
+                --with-modules \
+                --with-perl=no
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

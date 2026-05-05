@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="harfbuzz"
+desc="Text shaping library."
+info="https://harfbuzz.github.io/"
+version="10.2.0"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, meson, ninja, glib2, libcairo-dev, libicu-dev"
+build-type="tarball"
+download="https://github.com/harfbuzz/harfbuzz/releases/download/10.2.0/harfbuzz-10.2.0.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr \
+                   --buildtype=release \
+                   -Dgraphite2=disabled
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+}

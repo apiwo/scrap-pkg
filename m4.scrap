@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="m4"
+# This is the header of a scrapfile
+name="m4"
 desc="GNU M4 macro processor."
 info="https://www.gnu.org/software/m4/"
 version="1.4.19"

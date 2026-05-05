@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="libmnl"
+desc="Minimalistic Netlink communication library."
+info="https://www.netfilter.org/projects/libmnl/"
+version="1.0.5"
+license="LGPLv2.1"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, linux-headers"
+build-type="tarball"
+download="https://www.netfilter.org/projects/libmnl/files/libmnl-1.0.5.tar.bz2"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

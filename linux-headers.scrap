@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="linux-headers"
+# This is the header of a scrapfile
+name="linux-headers"
 desc="Linux kernel header files for userspace development."
 info="https://www.kernel.org/"
 version="6.12.1"

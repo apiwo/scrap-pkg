@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="libtool"
+# This is the header of a scrapfile
+name="libtool"
 desc="GNU libtool - shared library management."
 info="https://www.gnu.org/software/libtool/"
 version="2.4.7"

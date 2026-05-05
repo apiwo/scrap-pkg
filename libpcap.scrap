@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="libpcap"
+desc="Packet capture library."
+info="https://www.tcpdump.org/"
+version="1.10.5"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, flex, bison"
+build-type="tarball"
+download="https://www.tcpdump.org/release/libpcap-1.10.5.tar.gz"
+build() {
+    ./configure --prefix=/usr --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

@@ -1,0 +1,24 @@
+# This is the header of a scrapfile
+name="libjpeg-turbo"
+desc="JPEG image codec with SIMD acceleration."
+info="https://libjpeg-turbo.org/"
+version="3.1.0"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, cmake, nasm"
+build-type="tarball"
+download="https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.1.0/libjpeg-turbo-3.1.0.tar.gz"
+build() {
+    mkdir -p build && cd build
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DENABLE_STATIC=FALSE \
+             -DCMAKE_INSTALL_DEFAULT_LIBDIR=lib
+    make
+}
+instructions() {
+    cd build
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

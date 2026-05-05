@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="libfuse"
+# This is the header of a scrapfile
+name="libfuse"
 desc="Filesystem in Userspace library."
 info="https://github.com/libfuse/libfuse"
 version="3.16.2"

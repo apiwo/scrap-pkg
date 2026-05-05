@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="lz4"
+# This is the header of a scrapfile
+name="lz4"
 desc="Extremely fast lossless compression library."
 info="https://lz4.github.io/lz4/"
 version="1.10.0"

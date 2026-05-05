@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="iptables"
+# This is the header of a scrapfile
+name="iptables"
 desc="Linux kernel packet filtering tools."
 info="https://www.netfilter.org/projects/iptables/"
 version="1.8.11"

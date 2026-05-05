@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="libnftnl"
+desc="Low-level library for nftables Netlink messages."
+info="https://www.netfilter.org/projects/libnftnl/"
+version="1.2.8"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libmnl"
+build-type="tarball"
+download="https://www.netfilter.org/projects/libnftnl/files/libnftnl-1.2.8.tar.xz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

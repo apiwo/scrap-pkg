@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="i3"
+desc="An improved dynamic tiling window manager."
+info="https://i3wm.org/"
+version="4.24"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, meson, ninja, libxcb-dev, libxcb-util-dev, libxcb-cursor-dev, libxcb-keysyms-dev, libxkbcommon-dev, libcairo-dev, libpango-dev, libev-dev, libpcre2-dev, libstartup-notification-dev, yajl-dev"
+build-type="tarball"
+download="https://i3wm.org/downloads/i3-4.24.tar.xz"
+build() {
+    mkdir -p build && cd build
+    meson setup .. --prefix=/usr --buildtype=release
+    ninja
+}
+instructions() {
+    cd build
+    DESTDIR="$SCRAP_PKG_DEST" ninja install
+    mkdir -p "$SCRAP_PKG_DEST/etc/i3"
+    cp ../etc/config "$SCRAP_PKG_DEST/etc/i3/config" 2>/dev/null || true
+}

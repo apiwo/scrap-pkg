@@ -1,0 +1,19 @@
+# This is the header of a scrapfile
+name="iperf3"
+desc="Tool for active measurements of network bandwidth."
+info="https://github.com/esnet/iperf"
+version="3.17.1"
+license="BSD"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, openssl"
+build-type="tarball"
+download="https://github.com/esnet/iperf/archive/refs/tags/3.17.1.tar.gz"
+build() {
+    ./configure --prefix=/usr
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

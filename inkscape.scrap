@@ -1,0 +1,23 @@
+# This is the header of a scrapfile
+name="inkscape"
+desc="Professional vector graphics editor."
+info="https://inkscape.org/"
+version="1.4"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, cmake, libboost-dev, gtk3, glib2, libxml2, libxslt-dev, cairo, pango, libpng, libsigc++-dev, libpotrace-dev, python3, libgsl-dev"
+build-type="tarball"
+download="https://inkscape.org/gallery/item/44509/inkscape-1.4.tar.xz"
+build() {
+    mkdir -p build && cd build
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DBUILD_TESTING=OFF
+    make
+}
+instructions() {
+    cd build
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

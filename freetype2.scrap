@@ -1,0 +1,22 @@
+# This is the header of a scrapfile
+name="freetype2"
+desc="Font rendering library."
+info="https://freetype.org/"
+version="2.13.3"
+license="FreeType"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, zlib-dev, libbzip2-dev, libpng-dev, harfbuzz"
+build-type="tarball"
+download="https://downloads.sourceforge.net/freetype/freetype-2.13.3.tar.xz"
+build() {
+    sed -ri "s:.*(AUX_MODULES.*valid):\1:" modules.cfg
+    sed -r "s:.*(#.*SUBPIXEL_RENDERING) .*:\1:" \
+        -i include/freetype/config/ftoption.h
+    ./configure --prefix=/usr --disable-static
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+}

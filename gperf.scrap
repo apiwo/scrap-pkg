@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="gperf"
+# This is the header of a scrapfile
+name="gperf"
 desc="GNU perfect hash function generator."
 info="https://www.gnu.org/software/gperf/"
 version="3.1"

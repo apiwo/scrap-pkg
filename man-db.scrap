@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="man-db"
+# This is the header of a scrapfile
+name="man-db"
 desc="The on-line manual database."
 info="https://www.nongnu.org/man-db/"
 version="2.13.0"

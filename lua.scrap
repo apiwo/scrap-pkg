@@ -1,0 +1,21 @@
+# This is the header of a scrapfile
+name="lua"
+desc="Lightweight, embeddable scripting language."
+info="https://www.lua.org/"
+version="5.4.7"
+license="MIT"
+maintainer="apiwo"
+arch="x86_64"
+priority="optional"
+depends="gcc, make, libncurses-dev, readline"
+build-type="tarball"
+download="https://www.lua.org/ftp/lua-5.4.7.tar.gz"
+build() {
+    make INSTALL_TOP=/usr \
+         CC="gcc" \
+         CFLAGS="$CFLAGS -DLUA_USE_LINUX" \
+         linux
+}
+instructions() {
+    make INSTALL_TOP="$SCRAP_PKG_DEST/usr" install
+}

@@ -1,0 +1,28 @@
+# This is the header of a scrapfile
+name="kmod"
+desc="Linux kernel module handling utilities (insmod, rmmod, lsmod, modprobe)."
+info="https://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git"
+version="33"
+license="GPLv2"
+maintainer="apiwo"
+arch="x86_64"
+priority="required"
+depends="gcc, make, zlib-dev, xz, libzstd-dev, libssl-dev"
+build-type="tarball"
+download="https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-33.tar.xz"
+build() {
+    ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --with-zstd \
+                --with-xz \
+                --with-zlib \
+                --with-openssl
+    make
+}
+instructions() {
+    make DESTDIR="$SCRAP_PKG_DEST" install
+    for target in depmod insmod modinfo modprobe rmmod; do
+        ln -sfv kmod "$SCRAP_PKG_DEST/usr/bin/$target"
+    done
+    ln -sfv kmod "$SCRAP_PKG_DEST/usr/bin/lsmod"
+}

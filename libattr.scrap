@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="libattr"
+# This is the header of a scrapfile
+name="libattr"
 desc="Extended attribute library."
 info="https://savannah.nongnu.org/projects/attr"
 version="2.5.2"

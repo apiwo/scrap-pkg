@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="libelf"
+# This is the header of a scrapfile
+name="libelf"
 desc="ELF object file access library (elfutils)."
 info="https://sourceware.org/elfutils/"
 version="0.192"

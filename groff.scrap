@@ -1,5 +1,5 @@
-# This is the header of a scrap
-filename="groff"
+# This is the header of a scrapfile
+name="groff"
 desc="GNU troff typesetting package - needed for man pages."
 info="https://www.gnu.org/software/groff/"
 version="1.23.0"
